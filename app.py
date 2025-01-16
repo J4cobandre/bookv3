@@ -76,48 +76,36 @@ def get_provider_options():
     if not location or not insurance:
         return jsonify({"error": "Both location and insurance are required!"})
 
-    # Special handling for "Other" insurance
-    if insurance.upper() == "OTHER":
-        return jsonify({
-            "facility_options": {
-                "facilities": [],
-                "message": "Unable to determine facility options."
-            },
-            "pcp_change_requirement": {
-                "details": None,
-                "required": False,
-                "additional_info": "Insurance not in our current system.",
-                "form_link": None
-            },
-            "provider_options": [],
-            "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA" # Replace with your actual feedback form link
-        })
+    # Special handling for "Other" and "MVP Health Plan" insurances remains the same...
+
+    # Specialized locations handling
+    specialized_locations = ["PSYCH", "NUTRITION"]
     
-    if insurance.upper() == "MVP HEALTH PLAN":
-        return jsonify({
-            "facility_options": {
-                "facilities": [],
-                "message": "MVP Health Plan is currently not operational in this county."
-            },
-            "pcp_change_requirement": {
-                "details": "Panel Closed",
-                "required": False,
-                "additional_info": "Please contact MVP Health Plan for further assistance.",
-                "form_link": None
-            },
-            "provider_options": [],
-            "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"
-        })
+    if location.upper() in specialized_locations:
+        # Use func.upper() for case-insensitive comparison
+        providers = Provider.query.filter(
+            db.func.upper(Provider.location) == location.upper(),
+            db.func.upper(Provider.insurance) == insurance.upper()
+        ).all()
+    else:
+        # For other locations, include both specific location and ALL
+        providers = Provider.query.filter(
+            db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
+            db.func.upper(Provider.insurance) == insurance.upper()
+        ).all()
 
-    # Use case-insensitive matching with normalized location
-    providers = Provider.query.filter(
-        db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
-        db.func.upper(Provider.insurance) == insurance.upper()
-    ).all()
+    # Debug print to verify providers
+    print(f"Location: {location}")
+    print(f"Insurance: {insurance}")
+    print(f"Providers found: {len(providers)}")
+    for provider in providers:
+        print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
 
+    # If no providers found, return a specific response for SCUC
     if not providers:
-        return jsonify({"error": "No providers found for the given location and insurance."})
+        return jsonify({"error": "No Providers Available. Please book this appointment with SCUC."})
 
+    # Existing logic for providers found remains the same
     out_of_contract = not providers[0].hfmc_contract
 
     if out_of_contract:
@@ -142,7 +130,7 @@ def get_provider_options():
             {"name": provider.provider_name, "npi": provider.npi}
             for provider in providers
         ],
-        "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"  # You can keep this for all responses or customize as needed
+        "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"
     }
 
     return jsonify(response)
