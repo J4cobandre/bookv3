@@ -4,7 +4,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///par_logic.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///par_log.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -76,6 +76,39 @@ def get_provider_options():
     if not location or not insurance:
         return jsonify({"error": "Both location and insurance are required!"})
 
+    # Special handling for "Other" insurance
+    if insurance.upper() == "OTHER":
+        return jsonify({
+            "facility_options": {
+                "facilities": [],
+                "message": "Unable to determine facility options."
+            },
+            "pcp_change_requirement": {
+                "details": None,
+                "required": False,
+                "additional_info": "Insurance not in our current system.",
+                "form_link": None
+            },
+            "provider_options": [],
+            "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA" # Replace with your actual feedback form link
+        })
+    
+    if insurance.upper() == "MVP HEALTH PLAN":
+        return jsonify({
+            "facility_options": {
+                "facilities": [],
+                "message": "MVP Health Plan is currently not operational in this county."
+            },
+            "pcp_change_requirement": {
+                "details": "Panel Closed",
+                "required": False,
+                "additional_info": "Please contact MVP Health Plan for further assistance.",
+                "form_link": None
+            },
+            "provider_options": [],
+            "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"
+        })
+
     # Use case-insensitive matching with normalized location
     providers = Provider.query.filter(
         db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
@@ -108,7 +141,8 @@ def get_provider_options():
         "provider_options": [
             {"name": provider.provider_name, "npi": provider.npi}
             for provider in providers
-        ]
+        ],
+        "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"  # You can keep this for all responses or customize as needed
     }
 
     return jsonify(response)
