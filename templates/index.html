@@ -179,7 +179,7 @@
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}`, {
+                const response = await fetch(`https://bookv3.onrender.com/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
