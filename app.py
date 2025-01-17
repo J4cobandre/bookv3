@@ -79,7 +79,7 @@ def get_provider_options():
     # Special handling for "Other" and "MVP Health Plan" insurances remains the same...
 
     # Specialized locations handling
-    specialized_locations = ["PSYCH", "NUTRITION"]
+    specialized_locations = ["PSYCH", "NUTRITION","TELEVISIT"]
     
     if location.upper() in specialized_locations:
         # Use func.upper() for case-insensitive comparison
