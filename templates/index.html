@@ -228,6 +228,7 @@
 
                 const facility = data.facility_options.message;
                 const pcpChange = data.pcp_change_requirement.details;
+                const inContract = data.facility_options.facilities.includes("HFMC");
                 
                 // Create provider table
                 let providerTable = `
@@ -252,9 +253,16 @@
                 outputHTML = `
                     <div class="section-header">Facility Options</div>
                     <p>${facility}</p>
-                    <p><strong>Note:</strong> For Primary Care visits, please ensure that they are booked under HFMC Tax ID <strong>(271058844)</strong>.</p>
+                `;
 
-                    
+                 if (inContract) {
+                    outputHTML += `
+                        <p><strong>Note:</strong> For Primary Care visits, please ensure that they are booked under HFMC Tax ID <strong>(271058844)</strong>.</p>
+                    `;
+                }   
+
+
+                outputHTML += `    
                     <div class="section-header">PCP Change Requirement</div>
                     <p>${pcpChange}</p>
                 `;
