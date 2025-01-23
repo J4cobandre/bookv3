@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import case
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
@@ -76,36 +77,48 @@ def get_provider_options():
     if not location or not insurance:
         return jsonify({"error": "Both location and insurance are required!"})
 
-    # Special handling for "Other" and "MVP Health Plan" insurances remains the same...
+    # Define the priority order for providers
+    priority_1 = [
+        "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Mansoor Farooki", 
+        "Abel Infante", "Fazle Showon", "Barbara Phillips-Cole", "Rakesh Koul"
+    ]
+    priority_2 = [
+        "Rosetta Romero-Williams", "Shelly Twito", "Suraiya Chowdhury", 
+        "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar"
+    ]
 
-    # Specialized locations handling
-    specialized_locations = ["PSYCH", "NUTRITION","TELEVISIT"]
-    
-    if location.upper() in specialized_locations:
-        # Use func.upper() for case-insensitive comparison
+    # Create a case statement for ordering
+    order_case = case(
+        *[
+            (Provider.provider_name == name, i) for i, name in enumerate(priority_1, start=1)
+        ] + [
+            (Provider.provider_name == name, i + len(priority_1)) for i, name in enumerate(priority_2, start=1)
+        ],
+        else_=len(priority_1) + len(priority_2) + 1
+    )
+    # Query the providers with order by priority
+    if location.upper() in ["PSYCH", "NUTRITION", "TELEVISIT"]:
         providers = Provider.query.filter(
             db.func.upper(Provider.location) == location.upper(),
             db.func.upper(Provider.insurance) == insurance.upper()
-        ).all()
+        ).order_by(order_case).all()
     else:
-        # For other locations, include both specific location and ALL
         providers = Provider.query.filter(
             db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
             db.func.upper(Provider.insurance) == insurance.upper()
-        ).all()
+        ).order_by(order_case).all()
 
-    # Debug print to verify providers
+    # Debugging information
     print(f"Location: {location}")
     print(f"Insurance: {insurance}")
     print(f"Providers found: {len(providers)}")
     for provider in providers:
         print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
 
-    # If no providers found, return a specific response for SCUC
     if not providers:
         return jsonify({"error": "No Providers Available. Please book this appointment with SCUC."})
 
-    # Existing logic for providers found remains the same
+    # Existing logic for constructing the response remains the same
     out_of_contract = not providers[0].hfmc_contract
 
     if out_of_contract:
