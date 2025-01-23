@@ -84,7 +84,7 @@ def get_provider_options():
     ]
     priority_2 = [
         "Rosetta Romero-Williams", "Shelly Twito", "Suraiya Chowdhury", 
-        "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar", "Uchenna Egwuonwu"
+        "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar"
     ]
 
     # Create a case statement for ordering
@@ -137,7 +137,11 @@ def get_provider_options():
             "details": providers[0].pcp_change_requirement or "No PCP change requirement.",
             "required": bool(providers[0].pcp_change_requirement),
             "additional_info": "Ensure you submit the PCP Change Form before visiting.",
-            "form_link": get_pcp_change_form_link(insurance) if providers[0].pcp_change_requirement.strip() == "Insurance has PCP Change Form" else None
+            "form_link": get_pcp_change_form_link(insurance) if providers[0].pcp_change_requirement.strip() in [
+                "Insurance has PCP Change Form",
+                "Insurance has PCP Change Form.",
+            ] else None,
+
         },
         "provider_options": [
             {"name": provider.provider_name, "npi": provider.npi}
