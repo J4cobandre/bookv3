@@ -84,7 +84,7 @@ def get_provider_options():
     ]
     priority_2 = [
         "Rosetta Romero-Williams", "Shelly Twito", "Suraiya Chowdhury", 
-        "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar"
+        "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar", "Uchenna Egwuonwu"
     ]
 
     # Create a case statement for ordering
