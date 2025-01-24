@@ -11,21 +11,11 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZX0VTWYMP"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-QZX0VTWYMP');
-    </script>
-    <!-- track queries -->
-    <script>
-        function trackButtonClick() {
-            gtag('event', 'submit_click', {
-                'event_category': 'button',
-                'event_label': 'Submit Button',
-                'value': 1
-            });
-        }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QZX0VTWYMP');
     </script>
     
     <style>
@@ -125,13 +115,26 @@
             display: flex; /* Align items horizontally */
             justify-content: center; /* Center the items */
             gap: 20px; /* Space between dropdowns */
-            margin-bottom: 20px;
+            margin-bottom: 0px;
         }
 
         .dropdown-item {
             display: flex; /* Align label and dropdown horizontally */
             align-items: center; /* Vertically center label and dropdown */
             gap: 10px; /* Space between label and dropdown */
+        }
+
+        .checkbox-container {
+            display: flex; /* Align items horizontally */
+            justify-content: center; /* Center the items */
+            gap: 20px; /* Space between dropdowns */
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container label {
+            font-weight: bold; /* Make text bold */
+            margin: 0;
+            padding: 0;
         }
 
         select {
@@ -158,6 +161,8 @@
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
+            const isUnder18 = document.getElementById("isUnder18").checked;
+            const isFollowUp = document.getElementById("isFollowUp").checked;
 
             if (!site || !insurance) {
                 alert("Please select both site and insurance!");
@@ -200,7 +205,7 @@
             }
 
             try {
-                const response = await fetch(`https://bookv3.onrender.com/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}`, {
+                const response = await fetch(`https://bookv3.onrender.com/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -223,11 +228,7 @@
                     return;
                 }
 
-                // Prepare output HTML
-                let outputHTML = '';
-
                 const facility = data.facility_options.message;
-                const pcpChange = data.pcp_change_requirement.details;
                 const inContract = data.facility_options.facilities.includes("HFMC");
                 
                 // Create provider table
@@ -261,29 +262,64 @@
                     `;
                 }   
 
-
-                outputHTML += `    
-                    <div class="section-header">PCP Change Requirement</div>
-                    <p>${pcpChange}</p>
-                `;
-
-                // Add PCP Change Form links if required
-                if (data.pcp_change_requirement.form_link) {
+                if (!isUnder18 && data.pcp_change_requirement && data.pcp_change_requirement.details) {
                     outputHTML += `
-                        <div class="section-header">PCP Change Form</div>
-                        • If you want to send Healow Sign, 
-                        <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                        target="_blank" 
-                        class="form-link">
-                        click here for Healow Sign Process.
-                        </a><br>
-                        • If you want to print out the form,
-                        <a href="${data.pcp_change_requirement.form_link}" 
-                        target="_blank" 
-                        class="form-link">
-                        click here to access PCP Change Form.
-                        </a><br>
+                        <div class="section-header">PCP Change Requirement</div>
+                        <p>${data.pcp_change_requirement.details}</p>
                     `;
+
+                    // Medicare-specific logic for multiple forms
+                    if (insurance === "Medicare") {
+                        outputHTML += `
+                            <div class="section-header">PCP Change Form</div>
+                            <p>If you want to send Healow Sign, 
+                                <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                target="_blank" 
+                                class="form-link">
+                                click here for Healow Sign Process.
+                                </a>
+                            </p>
+                            <p>If you want to print out the required forms, you can access them below:</p>
+                            <div style="margin-left: 20px;">
+                                <ul style="list-style-type: disc; margin-top: 5px;">
+                                    <li>
+                                        <a href="https://drive.google.com/file/d/1uVLcqNum148eJkyO35BfoyiJB46esxt9/view?usp=drive_link" 
+                                        target="_blank" 
+                                        class="form-link">
+                                        Voluntary Alignment Form
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://drive.google.com/file/d/1LbekCRNLZsXzzNdXS0edFVZCmjNZwnA5/view?usp=sharing" 
+                                        target="_blank" 
+                                        class="form-link">
+                                        SDoH Form
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        `;
+                    } else if (data.pcp_change_requirement.form_link) {
+                        // Default case for other insurances with one form
+                        outputHTML += `
+                            <div class="section-header">PCP Change Form</div>
+                            • If you want to send Healow Sign, 
+                            <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                            target="_blank" 
+                            class="form-link">
+                            click here for Healow Sign Process.
+                            </a><br>
+                            • If you want to print out the form,
+                            <a href="${data.pcp_change_requirement.form_link}" 
+                            target="_blank" 
+                            class="form-link">
+                            click here to access PCP Change Form.
+                            </a><br>
+                        `;
+                    }
+                } else if (!isUnder18) {
+                    // Add a fallback message or handle absence of pcp_change_requirement
+                    console.log("PCP Change Requirement is missing in the response for non-under-18 patients.");
                 }
 
                 outputHTML += `
@@ -293,6 +329,7 @@
 
                 document.getElementById("output").innerHTML = outputHTML;
 
+               
             } catch (error) {
                 console.error("Error fetching data:", error);
                 document.getElementById("output").innerText = "An error occurred while fetching data.";
@@ -307,19 +344,19 @@
             <label for="site"><strong>Location:</strong></label>
             <select id="site">
                 <option value="">Select Location</option>
-                <option value="Astoria">Astoria</option>
-                <option value="Bartow">Bartow</option>
-                <option value="BX174">BX174</option>
-                <option value="Corona">Corona</option>
-                <option value="Crown Heights">Crown Heights</option>
                 <option value="Hicksville">Hicksville</option>
-                <option value="Jackson Heights">Jackson Heights</option>
-                <option value="Jamaica">Jamaica</option>
-                <option value="LIC">Long Island City</option>
-                <option value="Manhattan">Manhattan</option>
+                <option value="Corona">Corona</option>
                 <option value="Mineola">Mineola</option>
-                <option value="Stuytown">Stuytown</option>
+                <option value="Crown Heights">Crown Heights</option>
+                <option value="BX174">BX174</option>
+                <option value="Bartow">Bartow</option>
                 <option value="Williamsburg">Williamsburg</option>
+                <option value="Jamaica">Jamaica</option>
+                <option value="Jackson Heights">Jackson Heights</option>
+                <option value="Manhattan">Manhattan</option>
+                <option value="LIC">LIC</option>
+                <option value="Astoria">Astoria</option>
+                <option value="Stuytown">Stuytown</option>
                 <option value="Nutrition">Nao Med - Nutrition</option>
                 <option value="PSYCH">Nao Med - Psych</option>
                 <option value="Televisit">Televisit</option>
@@ -331,19 +368,19 @@
                 <option value="">Select Insurance</option>
                 <option value="1199 National Benefits Fund">1199 National Benefits Fund</option>
                 <option value="Aetna">Aetna</option>
-                <option value="BC Empire">Anthem/Empire Blue Cross</option>
-                <option value="BCBS Empire">Anthem/Empire Blue Cross Blue Shield</option>
+                <option value="BC Empire">BC Empire</option>
+                <option value="BCBS Empire">BCBS Empire</option>
                 <option value="Centivo">Centivo</option>
                 <option value="Cigna">Cigna</option>
                 <option value="Elder Plan">Elder Plan</option>
-                <option value="Emblem Health-GHI">GHI</option>
-                <option value="Emblem Health HIP">Emblem Health/HIP</option>
+                <option value="Emblem Health-GHI">Emblem Health-GHI</option>
+                <option value="Emblem Health HIP">Emblem Health HIP</option>
                 <option value="Fidelis">Fidelis</option>
                 <option value="First Health (Aetna)">First Health (Aetna)</option>
                 <option value="Healthfirst Medicare">Healthfirst Medicare</option>
                 <option value="Healthfirst Medicaid">Healthfirst Medicaid</option>
                 <option value="Healthfirst Other LOB">Healthfirst Other LOB</option>
-                <option value="HEALTHPLUS LLC">Healthplus LLC</option>
+                <option value="HEALTHPLUS LLC">HEALTHPLUS LLC</option>
                 <option value="Humana">Humana</option>
                 <option value="Magnacare">Magnacare</option>
                 <option value="Medicaid">Medicaid</option>
@@ -351,20 +388,36 @@
                 <option value="Metroplus">Metroplus</option>
                 <option value="Affinity">Molina Affinity</option>
                 <option value="MVP Health Plan">MVP Health Plan</option>
-                <option value="Multiplan / PHCS">Multiplan</option>
+                <option value="Multiplan / PHCS">Multiplan / PHCS</option>
                 <option value="Oscar Health">Oscar Health</option>
                 <option value="Oxford">Oxford Health Plan</option>
                 <option value="Tricare Humana Military">Tricare Humana Military</option>
-                <option value="UHC Medicare">United Healthcare Medicare</option>
-                <option value="UHC Medicaid NY">United Healthcare Medicaid NY</option>
-                <option value="UHC other LOB">United Healthcare other LOB</option>
+                <option value="UHC Medicare">UHC Medicare</option>
+                <option value="UHC Medicaid NY">UHC Medicaid NY</option>
+                <option value="UHC other LOB">UHC other LOB</option>
                 <option value="WEBTPA">WEBTPA</option>
                 <option value="Wellcare">Wellcare</option>
                 <option value="OTHER">Other</option>
             </select>
         </div>
     </div>
-    <button onclick="trackButtonClick(); fetchOptions();">Submit</button>
+
+    <div class="checkbox-container">
+        <div>
+            <label>
+                <input type="checkbox" id="isUnder18">
+                Is Patient under the age of 18?
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" id="isFollowUp">
+                Is this a follow-up appointment?
+            </label>
+        </div>
+    </div>
+    
+    <button onclick="fetchOptions()">Submit</button>
     <br>
     <div id="output"></div>
 </body>
