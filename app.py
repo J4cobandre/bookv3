@@ -24,6 +24,7 @@ def get_pcp_change_form_link(insurance):
     "Healthfirst Medicare": "https://drive.google.com/file/d/1QaT8J6j0ZyGascS-NN8ADOJC419mnEi6/view?usp=drive_link",
     "Healthfirst Other LOB": "https://drive.google.com/file/d/1QaT8J6j0ZyGascS-NN8ADOJC419mnEi6/view?usp=drive_link",
     "Humana": "https://drive.google.com/file/d/19oM7dToudm-J-MwZmWa6VOyEPIOlI4jW/view?usp=drive_link",
+    "Medicare": "https://drive.google.com/file/d/1uVLcqNum148eJkyO35BfoyiJB46esxt9/view?usp=drive_link",
     "UHC Medicare": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
     "UHC Medicaid NY": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
     "UHC other LOB": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
@@ -73,10 +74,14 @@ def get_provider_options():
     # Normalize the input location
     location = normalize_location(request.args.get('location', ''))
     insurance = request.args.get('insurance', '')
+    is_under_18 = request.args.get('isUnder18', 'false').lower() == 'true'  # Convert to boolean
+    is_follow_up = request.args.get('isFollowUp', 'false').lower() == 'true'  # Convert to boolean
 
     if not location or not insurance:
         return jsonify({"error": "Both location and insurance are required!"})
+    print(f"Querying with location: {location}, insurance: {insurance}")
 
+    providers = None
     # Define the priority order for providers
     priority_1 = [
         "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Mansoor Farooki", 
@@ -121,11 +126,60 @@ def get_provider_options():
     # Existing logic for constructing the response remains the same
     out_of_contract = not providers[0].hfmc_contract
 
-    if out_of_contract:
-        facility_message = "You can only visit SCUC."
+    if is_under_18:
+        facility_message = "Patients under 18 should be seen under SCUC (Urgent Care)."
         facilities = ["SCUC"]
+        response = {
+            "facility_options": {
+                "facilities": facilities,
+                "message": facility_message
+            },
+            "provider_options": [
+                {"name": provider.provider_name, "npi": provider.npi}
+                for provider in providers
+            ]
+        }
+        print("Returning response for under 18:", response)
+        return jsonify(response)  # Do not include PCP Change Requirement or Form
+        
+    if out_of_contract:
+        # Check if it's a follow-up with out-of-contract insurance
+        if is_follow_up:
+            facility_message = "You can only visit SCUC."
+            facilities = ["SCUC"]
+        else:
+            facility_message = "You can only visit SCUC."
+            facilities = ["SCUC"]
+        
+        # Build response without PCP Change Requirement
+        response = {
+            "facility_options": {
+                "facilities": facilities,
+                "message": facility_message
+            },
+            "provider_options": [
+                {"name": provider.provider_name, "npi": provider.npi}
+                for provider in providers
+            ],
+            "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"
+        }
+        print("Final Response for out-of-contract insurance:", response)
+        return jsonify(response)
+    elif is_follow_up:
+        facility_message = (
+            "<div>"
+            "<p>For follow-up appointments:</p>"
+            "<ul>"
+            "<li>Preferably book the appointment under HFMC, but the patient must understand and agree that their primary care provider (PCP) needs to be changed.</li>"
+            "<li>If the patient disagrees, they can only visit SCUC.</li>"
+            "</ul>"
+            "</div>"
+        )
+        facilities = ["HFMC"]
     else:
-        facility_message = "Schedule with HFMC (SCUC is available for same day appointments only)."
+        facility_message = (
+            "Schedule with HFMC (SCUC is available for same day appointments only)"
+        )
         facilities = ["HFMC", "SCUC"]
 
     response = {
@@ -140,6 +194,7 @@ def get_provider_options():
             "form_link": get_pcp_change_form_link(insurance) if providers[0].pcp_change_requirement.strip() in [
                 "Insurance has PCP Change Form",
                 "Insurance has PCP Change Form.",
+                "Medicare requires submission of Voluntary Alignment and SDoH Forms.",
             ] else None,
 
         },
@@ -149,7 +204,7 @@ def get_provider_options():
         ],
         "feedback_link": "https://forms.gle/ME2mKmVALXh4iDKWA"
     }
-
+    print("Final Response:", response) 
     return jsonify(response)
 
 if __name__ == '__main__':
