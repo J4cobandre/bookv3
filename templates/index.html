@@ -16,6 +16,16 @@
     gtag('js', new Date());
 
     gtag('config', 'G-QZX0VTWYMP');
+
+    <!-- track queries -->
+    <script>
+        function trackButtonClick() {
+            gtag('event', 'submit_click', {
+                'event_category': 'button',
+                'event_label': 'Submit Button',
+                'value': 1
+            });
+        }
     </script>
     
     <style>
@@ -417,7 +427,7 @@
         </div>
     </div>
     
-    <button onclick="fetchOptions()">Submit</button>
+    <button onclick="trackButtonClick(); fetchOptions();">Submit</button>
     <br>
     <div id="output"></div>
 </body>
