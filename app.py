@@ -170,15 +170,15 @@ def get_provider_options():
             "<div>"
             "<p>For follow-up appointments:</p>"
             "<ul>"
-            "<li>Preferably book the appointment under HFMC, but the patient must understand and agree that their primary care provider (PCP) needs to be changed.</li>"
-            "<li>If the patient disagrees, they can only visit SCUC.</li>"
+            "<li>Preferably book the appointment under Hicksville Family Medical Care (HFMC), but the patient must understand and agree that their primary care provider (PCP) needs to be changed.</li>"
+            "<li>If the patient disagrees, they can only visit Statcare Urgent Care (SCUC).</li>"
             "</ul>"
             "</div>"
         )
         facilities = ["HFMC"]
     else:
         facility_message = (
-            "Schedule with HFMC (SCUC is available for same day appointments only)"
+            "Schedule with Hicksville Family Medical Care (HFMC) (Statcare Urgent Care (SCUC) is available for same day appointments only.)"
         )
         facilities = ["HFMC", "SCUC"]
 
