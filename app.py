@@ -121,13 +121,13 @@ def get_provider_options():
         print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
 
     if not providers:
-        return jsonify({"error": "No Providers Available. Please book this appointment with SCUC."})
+        return jsonify({"error": "No Providers Available. Please book this appointment with Statcare Urgent Care (SCUC)."})
 
     # Existing logic for constructing the response remains the same
     out_of_contract = not providers[0].hfmc_contract
 
     if is_under_18:
-        facility_message = "Patients under 18 should be seen under SCUC (Urgent Care)."
+        facility_message = "Patients under 18 should be seen under Statcare Urgent Care (SCUC)."
         facilities = ["SCUC"]
         response = {
             "facility_options": {
@@ -145,10 +145,10 @@ def get_provider_options():
     if out_of_contract:
         # Check if it's a follow-up with out-of-contract insurance
         if is_follow_up:
-            facility_message = "You can only visit SCUC."
+            facility_message = "You can only visit Statcare Urgent Care (SCUC)."
             facilities = ["SCUC"]
         else:
-            facility_message = "You can only visit SCUC."
+            facility_message = "You can only visit Statcare Urgent Care (SCUC)."
             facilities = ["SCUC"]
         
         # Build response without PCP Change Requirement
@@ -178,7 +178,7 @@ def get_provider_options():
         facilities = ["HFMC"]
     else:
         facility_message = (
-            "Schedule with Hicksville Family Medical Care (HFMC) (Statcare Urgent Care (SCUC) is available for same day appointments only.)"
+            "Schedule with Hicksville Family Medical Care (HFMC) (Statcare Urgent Care - SCUC is available for same day appointments only.)"
         )
         facilities = ["HFMC", "SCUC"]
 
