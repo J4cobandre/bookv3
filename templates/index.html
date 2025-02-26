@@ -600,7 +600,7 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Modify the fetchOptions function to include the UHC information as additional data
+        // Modify the fetchOptions function to place UHC information after the form link
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -712,20 +712,6 @@
                         ` : ''}
                     `;
                     
-                    // Add United Healthcare specific information if applicable
-                    if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
-                        pcpChangeHTML += `
-                            <div class="section-header">United Health Care Line of Business that do not need PCP Change.</div>
-                            <ul style="text-align: left; padding-left: 20px;">
-                                <li>Choice Plus</li>
-                                <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
-                                <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
-                                <li>POS Choice Plus</li>
-                                <li>Choice EPO</li>
-                            </ul>
-                        `;
-                    }
-                    
                     // Add Medicare-specific or form-specific information
                     if (insurance === "Medicare") {
                         pcpChangeHTML += `
@@ -780,6 +766,20 @@
                                 click here to access PCP Change Form
                                 </a>
                             </p>
+                        `;
+                    }
+                    
+                    // Add United Healthcare specific information if applicable - now placed after the form links
+                    if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
+                        pcpChangeHTML += `
+                            <div class="section-header">United Health Care Line of Business that do not need PCP Change.</div>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>Choice Plus</li>
+                                <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
+                                <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
+                                <li>POS Choice Plus</li>
+                                <li>Choice EPO</li>
+                            </ul>
                         `;
                     }
                 }
