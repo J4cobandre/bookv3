@@ -360,14 +360,59 @@
             flex: 1;
         }
 
-        /* Responsive design */
+        /* Improve mobile responsiveness */
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
+                padding: 10px;
             }
 
             .left-column {
                 width: 100%;
+                min-width: auto;
+            }
+            
+            .results {
+                width: 100%;
+                overflow-x: hidden;
+                box-sizing: border-box;
+            }
+            
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .left-section, 
+            .right-section {
+                max-width: 100%;
+            }
+            
+            table {
+                width: 100%;
+                font-size: 14px;
+            }
+            
+            .table-container {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            
+            body {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                overflow-x: hidden;
+            }
+            
+            .page-container {
+                width: 100%;
+                overflow-x: hidden;
+            }
+            
+            select, button, .phone-input {
+                max-width: 100%;
+                width: 100%;
+                box-sizing: border-box;
             }
         }
 
@@ -638,19 +683,19 @@
                         <label>Location:</label>
                         <select id="site">
                             <option value="">Select Location</option>
-                            <option value="Hicksville">Hicksville</option>
-                            <option value="Corona">Corona</option>
-                            <option value="Mineola">Mineola</option>
-                            <option value="Crown Heights">Crown Heights</option>
-                            <option value="BX174">BX174</option>
-                            <option value="Bartow">Bartow</option>
-                            <option value="Williamsburg">Williamsburg</option>
-                            <option value="Jamaica">Jamaica</option>
-                            <option value="Jackson Heights">Jackson Heights</option>
-                            <option value="Manhattan">Manhattan</option>
-                            <option value="LIC">LIC</option>
                             <option value="Astoria">Astoria</option>
+                            <option value="Bartow">Bartow</option>
+                            <option value="BX174">BX174</option>
+                            <option value="Corona">Corona</option>
+                            <option value="Crown Heights">Crown Heights</option>
+                            <option value="Hicksville">Hicksville</option>
+                            <option value="Jackson Heights">Jackson Heights</option>
+                            <option value="Jamaica">Jamaica</option>
+                            <option value="LIC">Long Island City</option>
+                            <option value="Manhattan">Manhattan</option>
+                            <option value="Mineola">Mineola</option>
                             <option value="Stuytown">Stuytown</option>
+                            <option value="Williamsburg">Williamsburg</option>
                             <option value="Nutrition">Nao Med - Nutrition</option>
                             <option value="PSYCH">Nao Med - Psych</option>
                             <option value="Televisit">Televisit</option>
@@ -687,9 +732,9 @@
                             <option value="Oscar Health">Oscar Health</option>
                             <option value="Oxford">Oxford Health Plan</option>
                             <option value="Tricare Humana Military">Tricare Humana Military</option>
-                            <option value="UHC Medicare">UHC Medicare</option>
-                            <option value="UHC Medicaid NY">UHC Medicaid NY</option>
-                            <option value="UHC other LOB">UHC other LOB</option>
+                            <option value="UHC Medicare">United Healthcare Medicare</option>
+                            <option value="UHC Medicaid NY">United Healthcare Medicaid NY</option>
+                            <option value="UHC other LOB">United Healthcare other LOB</option>
                             <option value="WEBTPA">WEBTPA</option>
                             <option value="Wellcare">Wellcare</option>
                             <option value="OTHER">Other</option>
