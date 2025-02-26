@@ -180,7 +180,7 @@ def get_provider_options():
         facilities = ["HFMC"]
     else:
         facility_message = (
-            "Schedule with Hicksville Family Medical Care (Statcare Urgent Care is available for same day appointments only)"
+            "Schedule with Hicksville Family Medical Care, (Statcare Urgent Care is available for same day appointments only)."
         )
         facilities = ["HFMC", "SCUC"]
 
