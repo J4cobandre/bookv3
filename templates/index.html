@@ -17,27 +17,17 @@
 
     gtag('config', 'G-QZX0VTWYMP');
     </script>
-    <!-- track queries -->
-    <script>
-        function trackButtonClick() {
-            gtag('event', 'submit_click', {
-                'event_category': 'button',
-                'event_label': 'Submit Button',
-                'value': 1
-            });
-        }
-    </script>
     
     <style>
         body {
             font-family: 'Adamina', serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
+            margin: 0;
+            padding: 0;
+            text-align: left;
             background-color: #f4f4f4;
             color: #1e3565;
             line-height: 1.6;
+            width: 100%;
         }
         h1 {
             color: #1e3565;
@@ -68,14 +58,13 @@
         table {
             width: 100%;
             max-width: 600px;
-            margin: 20px auto;
+            margin: auto;
             border-collapse: collapse;
             background-color: white;
             box-shadow: 0 2px 5px rgba(30, 53, 101, 0.1);
         }
         table, th, td {
             border: 1px solid #1e3565;
-            padding: 12px;
             text-align: left;
         }
         th {
@@ -97,29 +86,21 @@
             background-color: white;
             border-radius: 8px;
             padding: 20px;
-            margin-top: 20px;
             box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
             color: #1e3565;
-            width: 100%; /* Ensure it spans the width of the container */
-            max-width: 600px; /* Match the table's max-width */
-            margin-left: auto; /* Center align */
-            margin-right: auto; /* Center align */
-            text-align: left; /* Align text to the left */
+            width: 100%;
+            max-width: 1800px;
         }
         .section-header {
             color: #1e3565;
             margin-top: 15px;
             font-weight: bold;
-            font-size:20px;
-            border-bottom: 2px;
-            padding-bottom: 5px;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
         .feedback-section {
-            margin-top: 20px;
-            padding: 15px;
             background-color: #f9f9f9;
-            border-radius: 5px;
-            border: 1px solid #9acf8c;
+            border-radius: 1px;
         }
         .dropdown-container {
             display: flex; /* Align items horizontally */
@@ -166,8 +147,310 @@
                 font-size: 14px;
             }
         }
+        .phone-submission {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #9acf8c;
+        }
+
+        .phone-input {
+            font-family: 'Adamina', serif;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #1e3565;
+            border-radius: 4px;
+            color: #1e3565;
+            font-size: 16px; /* Make the font size larger for better readability */
+            letter-spacing: 0.5px; /* Add slight spacing between characters */
+        }
+
+        .phone-input::placeholder {
+            color: #999;
+        }
+
+        .success-message {
+            color: #7bb56f;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .left-section {
+            flex: 1;
+            max-width: 50%;
+            text-align: left;
+        }
+
+        .right-section {
+            flex: 1;
+            max-width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-container {
+            margin-top: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow-y: auto;
+            max-height: 660px; /* Set a max height that matches left content */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th {
+            background-color: #1e3565;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+            border: none;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: white;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Style the scrollbar */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #9acf8c;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #7bb56f;
+        }
+
+        @media (max-width: 900px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            .left-section, .right-section {
+                max-width: 100%;
+            }
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(24px, 3vw, 48px); /* Minimum 24px, Maximum 48px, scales with viewport */
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .left-column {
+            width: 20%;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .filters {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .results {
+            flex: 1;
+            min-height: 300px; /* Match height of left column */
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
+        }
+
+        /* Make both main containers have same minimum height */
+        .filters, .results {
+            min-height: 300px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-section, 
+        .right-section {
+            flex: 1;
+            height: 100%;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .left-column {
+                width: 100%;
+            }
+        }
+
+        .feedback-section {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 5px;
+            padding-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
+        }
+
+        .form-link {
+            color: #1e3565;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .form-link:hover {
+            color: #9acf8c;
+            text-decoration: underline;
+        }
     </style>
     <script>
+        function formatPhoneNumber(input) {
+            // Remove all non-digit characters
+            let phoneNumber = input.replace(/\D/g, '');
+            
+            // Limit to 10 digits
+            phoneNumber = phoneNumber.substring(0, 10);
+            
+            // Format the number as (XXX) XXX-XXXX
+            if (phoneNumber.length > 0) {
+                if (phoneNumber.length <= 3) {
+                    phoneNumber = `(${phoneNumber}`;
+                } else if (phoneNumber.length <= 6) {
+                    phoneNumber = `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+                } else {
+                    phoneNumber = `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+                }
+            }
+            
+            return phoneNumber;
+        }
+
+        // Add event listener to format phone number as user types
+        function setupPhoneNumberFormatting() {
+            const phoneInput = document.getElementById('phoneNumber');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let formattedNumber = formatPhoneNumber(e.target.value);
+                    e.target.value = formattedNumber;
+                });
+            }
+        }
+
+        async function submitPhoneNumber(insurance) {
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            try {
+                const response = await fetch('/submit-phone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone: phoneNumber,
+                        insurance: insurance
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error">${data.error}</div>`;
+                } else {
+                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="success">Text message sent successfully!</div>`;
+                }
+            } catch (error) {
+                document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error">Failed to send text message</div>`;
+            }
+        }
+
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -201,7 +484,8 @@
                         <p>We recommend calling the Member Services number on the back of the patient's insurance card.</p>
                         
                         <div class="section-header">Help Us Improve</div>
-                        <p>Can't find your insurance? We want to hear from you!</p>
+                        <p>Can't find your insurance?</p>
+                        <p>We want to hear from you!</p>
                         <a href="${predefinedOtherResponse.feedback_link}" 
                         target="_blank" 
                         class="form-link">
@@ -215,220 +499,218 @@
             }
 
             try {
-                const response = await fetch(`https://bookv3.onrender.com/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                const response = await fetch(`/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`);
                 const data = await response.json();
 
-                 // Check if there's an error property
                 if (data.error) {
-                    document.getElementById("output").innerHTML = `
-                        <div class="section-header">Provider Availability</div>
-                        <p>${data.error}</p>
-                    `;
+                    document.getElementById("output").innerHTML = `<div class="error-message">${data.error}</div>`;
                     return;
                 }
 
-                const facility = data.facility_options.message;
-                const inContract = data.facility_options.facilities.includes("HFMC");
-                
-                // Create provider table
-                let providerTable = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Provider Name</th>
-                                <th>Provider NPI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.provider_options.map((provider) => `
-                                <tr>
-                                    <td>${provider.name}</td>
-                                    <td>${provider.npi}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                // Create provider options HTML regardless of facility status
+                const providerOptionsHTML = `
+                    <div class="right-section">
+                        <div class="section-header">Provider Options</div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Provider Name</th>
+                                        <th>Provider NPI</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.provider_options.map((provider) => `
+                                        <tr>
+                                            <td>${provider.name}</td>
+                                            <td>${provider.npi}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 `;
 
-                outputHTML = `
-                    <div class="section-header">Facility Options</div>
-                    <p>${facility}</p>
-                `;
-
-                 if (inContract) {
-                    outputHTML += `
-                        <p><strong>Note:</strong> For Primary Care visits, please ensure that they are booked under HFMC Tax ID <strong>(271058844)</strong>.</p>
-                    `;
-                }   
-
-                if (!isUnder18 && data.pcp_change_requirement && data.pcp_change_requirement.details) {
-                    outputHTML += `
-                        <div class="section-header">PCP Change Requirement</div>
-                        <p>${data.pcp_change_requirement.details}</p>
-                    `;
-
-                    // Medicare-specific logic for multiple forms
-                    if (insurance === "Medicare") {
-                        outputHTML += `
-                            <div class="section-header">PCP Change Form</div>
-                            <p>If you want to send Healow Sign, 
-                                <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                                target="_blank" 
-                                class="form-link">
-                                click here for Healow Sign Process.
-                                </a>
-                            </p>
-                            <p>If you want to print out the required forms, you can access them below:</p>
-                            <div style="margin-left: 20px;">
-                                <ul style="list-style-type: disc; margin-top: 5px;">
-                                    <li>
-                                        <a href="https://drive.google.com/file/d/1uVLcqNum148eJkyO35BfoyiJB46esxt9/view?usp=drive_link" 
+                document.getElementById("output").innerHTML = `
+                    <div class="content-wrapper">
+                        <div class="left-section">
+                            <div class="section-header">Facility Options</div>
+                            ${data.facility_options.message}
+                            
+                            ${!isUnder18 && data.pcp_change_requirement ? `
+                                <div class="section-header">PCP Change Requirement</div>
+                                <p>${data.pcp_change_requirement.details}</p>
+                                
+                                ${insurance === "Medicare" ? `
+                                    <div class="section-header">PCP Change Form</div>
+                                    <p>
+                                        • If you want to send Healow Sign, 
+                                        <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                        target="_blank" 
+                                        class="form-link">
+                                        click here for Healow Sign Process
+                                        </a>
+                                    </p>
+                                    <p>If you want to print out the required forms, you can access them below:</p>
+                                    <p>
+                                        • <a href="${data.pcp_change_requirement.voluntary_alignment_form}" 
                                         target="_blank" 
                                         class="form-link">
                                         Voluntary Alignment Form
                                         </a>
-                                    </li>
-                                    <li>
-                                        <a href="https://drive.google.com/file/d/1LbekCRNLZsXzzNdXS0edFVZCmjNZwnA5/view?usp=sharing" 
+                                    </p>
+                                    <p>
+                                        • <a href="${data.pcp_change_requirement.sdoh_form}" 
                                         target="_blank" 
                                         class="form-link">
                                         SDoH Form
                                         </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        `;
-                    } else if (data.pcp_change_requirement.form_link) {
-                        // Default case for other insurances with one form
-                        outputHTML += `
-                            <div class="section-header">PCP Change Form</div>
-                            • If you want to send Healow Sign, 
-                            <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                            target="_blank" 
-                            class="form-link">
-                            click here for Healow Sign Process.
-                            </a><br>
-                            • If you want to print out the form,
-                            <a href="${data.pcp_change_requirement.form_link}" 
-                            target="_blank" 
-                            class="form-link">
-                            click here to access PCP Change Form.
-                            </a><br>
-                        `;
-                    }
-                } else if (!isUnder18) {
-                    // Add a fallback message or handle absence of pcp_change_requirement
-                    console.log("PCP Change Requirement is missing in the response for non-under-18 patients.");
-                }
-
-                outputHTML += `
-                    <div class="section-header">Provider Options</div>
-                    ${providerTable}
+                                    </p>
+                                ` : (data.pcp_change_requirement?.form_link ? `
+                                    <div class="phone-submission">
+                                        <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
+                                        <input type="tel" id="phoneNumber" class="phone-input" 
+                                            placeholder="(XXX) XXX-XXXX"
+                                            maxlength="14">
+                                        <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
+                                        <div id="phoneSubmissionMessage"></div>
+                                    </div>
+                                    <p>
+                                        • If you want to send Healow Sign, 
+                                        <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                        target="_blank" 
+                                        class="form-link">
+                                        click here for Healow Sign Process
+                                        </a>
+                                    </p>
+                                    <p>
+                                        • If you want to print out the form, 
+                                        <a href="${data.pcp_change_requirement.form_link}" 
+                                        target="_blank" 
+                                        class="form-link">
+                                        click here to access PCP Change Form
+                                        </a>
+                                    </p>
+                                ` : '')}
+                            ` : ''}
+                        </div>
+                        ${providerOptionsHTML}
+                    </div>
                 `;
-
-                document.getElementById("output").innerHTML = outputHTML;
-
-               
+                
+                // Setup phone formatting after content is added
+                setTimeout(setupPhoneNumberFormatting, 100);
             } catch (error) {
                 console.error("Error fetching data:", error);
-                document.getElementById("output").innerText = "An error occurred while fetching data.";
+                document.getElementById("output").innerHTML = `<div class="error-message">An error occurred while fetching data.</div>`;
             }
         }
     </script>
 </head>
 <body>
-    <h1>Provider Look Up Tool</h1>
-    <div class="dropdown-container">
-        <div class="dropdown-item">
-            <label for="site"><strong>Location:</strong></label>
-            <select id="site">
-                <option value="">Select Location</option>
-                <option value="Astoria">Astoria</option>
-                <option value="Bartow">Bartow</option>
-                <option value="BX174">BX174</option>
-                <option value="Corona">Corona</option>
-                <option value="Crown Heights">Crown Heights</option>
-                <option value="Hicksville">Hicksville</option>
-                <option value="Jackson Heights">Jackson Heights</option>
-                <option value="Jamaica">Jamaica</option>
-                <option value="LIC">LIC</option>
-                <option value="Manhattan">Manhattan</option>
-                <option value="Mineola">Mineola</option>
-                <option value="Stuytown">Stuytown</option>
-                <option value="Williamsburg">Williamsburg</option>
-                <option value="Nutrition">Nao Med - Nutrition</option>
-                <option value="PSYCH">Nao Med - Psych</option>
-                <option value="Televisit">Televisit</option>
-            </select>
+    <div class="page-container">
+        <div class="header">
+            <h1>Provider Look Up Tool</h1>
         </div>
-        <div class="dropdown-item">
-            <label for="insurance"><strong>Insurance:</strong></label>
-            <select id="insurance">
-                <option value="">Select Insurance</option>
-                <option value="1199 National Benefits Fund">1199 National Benefits Fund</option>
-                <option value="Aetna">Aetna</option>
-                <option value="BC Empire">Anthem BC Empire</option>
-                <option value="BCBS Empire">Anthem BCBS Empire</option>
-                <option value="Centivo">Centivo</option>
-                <option value="Cigna">Cigna</option>
-                <option value="Elder Plan">Elder Plan</option>
-                <option value="Emblem Health-GHI">Emblem Health-GHI</option>
-                <option value="Emblem Health HIP">Emblem Health HIP</option>
-                <option value="Fidelis">Fidelis</option>
-                <option value="First Health (Aetna)">First Health (Aetna)</option>
-                <option value="Healthfirst Medicare">Healthfirst Medicare</option>
-                <option value="Healthfirst Medicaid">Healthfirst Medicaid</option>
-                <option value="Healthfirst Other LOB">Healthfirst Other LOB</option>
-                <option value="HEALTHPLUS LLC">HEALTHPLUS LLC</option>
-                <option value="Humana">Humana</option>
-                <option value="Magnacare">Magnacare</option>
-                <option value="Medicaid">Medicaid</option>
-                <option value="Medicare">Medicare</option>
-                <option value="Metroplus">Metroplus</option>
-                <option value="Affinity">Molina Affinity</option>
-                <option value="MVP Health Plan">MVP Health Plan</option>
-                <option value="Multiplan / PHCS">Multiplan / PHCS</option>
-                <option value="Oscar Health">Oscar Health</option>
-                <option value="Oxford">Oxford Health Plan</option>
-                <option value="Tricare Humana Military">Tricare Humana Military</option>
-                <option value="UHC Medicare">United Healthcare Medicare</option>
-                <option value="UHC Medicaid NY">United Healthcare Medicaid NY</option>
-                <option value="UHC other LOB">United Healthcare other LOB</option>
-                <option value="WEBTPA">WEBTPA</option>
-                <option value="Wellcare">Wellcare</option>
-                <option value="OTHER">Other</option>
-            </select>
-        </div>
-    </div>
+        
+        <div class="main-content">
+            <div class="left-column">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Location:</label>
+                        <select id="site">
+                            <option value="">Select Location</option>
+                            <option value="Hicksville">Hicksville</option>
+                            <option value="Corona">Corona</option>
+                            <option value="Mineola">Mineola</option>
+                            <option value="Crown Heights">Crown Heights</option>
+                            <option value="BX174">BX174</option>
+                            <option value="Bartow">Bartow</option>
+                            <option value="Williamsburg">Williamsburg</option>
+                            <option value="Jamaica">Jamaica</option>
+                            <option value="Jackson Heights">Jackson Heights</option>
+                            <option value="Manhattan">Manhattan</option>
+                            <option value="LIC">LIC</option>
+                            <option value="Astoria">Astoria</option>
+                            <option value="Stuytown">Stuytown</option>
+                            <option value="Nutrition">Nao Med - Nutrition</option>
+                            <option value="PSYCH">Nao Med - Psych</option>
+                            <option value="Televisit">Televisit</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Insurance:</label>
+                        <select id="insurance">
+                            <option value="">Select Insurance</option>
+                            <option value="1199 National Benefits Fund">1199 National Benefits Fund</option>
+                            <option value="Aetna">Aetna</option>
+                            <option value="BC Empire">BC Empire</option>
+                            <option value="BCBS Empire">BCBS Empire</option>
+                            <option value="Centivo">Centivo</option>
+                            <option value="Cigna">Cigna</option>
+                            <option value="Elder Plan">Elder Plan</option>
+                            <option value="Emblem Health-GHI">Emblem Health-GHI</option>
+                            <option value="Emblem Health HIP">Emblem Health HIP</option>
+                            <option value="Fidelis">Fidelis</option>
+                            <option value="First Health (Aetna)">First Health (Aetna)</option>
+                            <option value="Healthfirst Medicare">Healthfirst Medicare</option>
+                            <option value="Healthfirst Medicaid">Healthfirst Medicaid</option>
+                            <option value="Healthfirst Other LOB">Healthfirst Other LOB</option>
+                            <option value="HEALTHPLUS LLC">HEALTHPLUS LLC</option>
+                            <option value="Humana">Humana</option>
+                            <option value="Magnacare">Magnacare</option>
+                            <option value="Medicaid">Medicaid</option>
+                            <option value="Medicare">Medicare</option>
+                            <option value="Metroplus">Metroplus</option>
+                            <option value="Affinity">Molina Affinity</option>
+                            <option value="MVP Health Plan">MVP Health Plan</option>
+                            <option value="Multiplan / PHCS">Multiplan / PHCS</option>
+                            <option value="Oscar Health">Oscar Health</option>
+                            <option value="Oxford">Oxford Health Plan</option>
+                            <option value="Tricare Humana Military">Tricare Humana Military</option>
+                            <option value="UHC Medicare">UHC Medicare</option>
+                            <option value="UHC Medicaid NY">UHC Medicaid NY</option>
+                            <option value="UHC other LOB">UHC other LOB</option>
+                            <option value="WEBTPA">WEBTPA</option>
+                            <option value="Wellcare">Wellcare</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="isUnder18">
+                            Is Patient under the age of 18?
+                        </label>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="isFollowUp">
+                            Is this a follow-up appointment?
+                        </label>
+                    </div>
+                    
+                    <button onclick="fetchOptions()">Submit</button>
+                </div>
 
-    <div class="checkbox-container">
-        <div>
-            <label>
-                <input type="checkbox" id="isUnder18">
-                Is Patient under the age of 18?
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" id="isFollowUp">
-                Is this a follow-up appointment?
-            </label>
+                <div class="feedback-section">
+                    <div class="section-header">Help Us Improve</div>
+                    <p>Can't find the insurance or provider you're looking for? We want to hear from you!</p>
+                    <a href="https://forms.gle/ME2mKmVALXh4iDKWA" 
+                       target="_blank" 
+                       class="form-link">
+                       Submit Feedback
+                    </a>
+                </div>
+            </div>
+
+            <div class="results" id="output">
+                <!-- This content will be populated by JavaScript -->
+            </div>
         </div>
     </div>
-    
-    <button onclick="trackButtonClick(); fetchOptions();">Submit</button>
-    <br>
-    <div id="output"></div>
 </body>
 </html>
