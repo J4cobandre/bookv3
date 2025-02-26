@@ -334,6 +334,7 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
+            position: relative; /* Add this to make absolute positioning work */
         }
 
         /* Make both main containers have same minimum height */
@@ -437,6 +438,41 @@
             color: #9acf8c;
             text-decoration: underline;
         }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #1e3565;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #1e3565;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
     <script>
         function formatPhoneNumber(input) {
@@ -502,6 +538,48 @@
             }
         }
 
+        // Add this function to check if PCP change is not needed
+        function isPCPChangeNotNeeded(insurance) {
+            const noPCPChangeInsurances = [
+                "Aetna Commercial", "OPEN ACCESS AETNA SELECT", "AETNA CHOICE POS II", 
+                "OPEN ACCESS ELECT CHOICE (OAEPO)", "United Teamster Fund", "UMR",
+                "Quantum Health", "AMERICAN AIRLINES - UHC CHOICE PLUS", "UNITED WELFARE FUND",
+                "UHC CHOICE PLUS", "BLUE CROSS BLUE SHIELD", "BLUE ACCESS PPO NY",
+                "NJ PPO ALTNET HORIZON MAN CARE 36K0", "EPO Plan", 
+                "Empire Blue Access Gated EPO", "FEP BLUE/FEDERAL",
+                "Oxford Health Plan", "Liberty Network Plan", "Freedom Network",
+                "Oscar Health", "PPO", "EPO", "United Healthcare", "Choice Plus",
+                "LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE", 
+                "UHC Dual Complete NY-S001 (PPO D-SNP)", "Choice", "Choice EPO",
+                "WELLCARE", "SIMPLE OPEN (PPO)"
+            ];
+            
+            return noPCPChangeInsurances.some(ins => insurance.includes(ins));
+        }
+
+        // Add a retry function for fetch operations
+        async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
+            let lastError;
+            
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    return await fetch(url, options);
+                } catch (error) {
+                    console.log(`Fetch attempt ${attempt + 1} failed:`, error);
+                    lastError = error;
+                    
+                    // Wait before retrying
+                    if (attempt < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            
+            // If we've exhausted all retries, throw the last error
+            throw lastError;
+        }
+
+        // Modify the fetchOptions function to use the retry mechanism
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -513,7 +591,15 @@
                 return;
             }
 
-            // Predefined response for "Other" insurance
+            // Show loading spinner
+            document.getElementById("output").innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Retreiving information and Providers...</div>
+                </div>
+            `;
+
+            // Predefined response for "OTHER" insurance
             if (insurance === "OTHER") {
                 const predefinedOtherResponse = {
                     facility_options: {
@@ -550,7 +636,13 @@
             }
 
             try {
-                const response = await fetch(`/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`);
+                const response = await fetchWithRetry(
+                    `/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`,
+                    {},  // default options
+                    3,   // max 3 retries
+                    1000 // 1 second delay between retries
+                );
+                
                 const data = await response.json();
 
                 if (data.error) {
@@ -567,7 +659,7 @@
                                 <thead>
                                     <tr>
                                         <th>Provider Name</th>
-                                        <th>Provider NPI</th>
+                                        <th>${insurance.includes("Healthfirst") ? "Healthfirst ID" : "Provider NPI"}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -583,68 +675,115 @@
                     </div>
                 `;
 
+                // Add PCP Change Not Required section if applicable
+                let pcpChangeHTML = '';
+                if (!isUnder18) {
+                    if (isPCPChangeNotNeeded(insurance)) {
+                        pcpChangeHTML = `
+                            <div class="section-header">PCP Change Requirement</div>
+                            <p>PCP Change is <strong>NOT</strong> required for this insurance.</p>
+                            <div class="section-header">Insurance Lines of Business - No PCP Change Needed</div>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>Aetna Commercial</li>
+                                <li>OPEN ACCESS AETNA SELECT</li>
+                                <li>AETNA CHOICE POS II</li>
+                                <li>OPEN ACCESS ELECT CHOICE (OAEPO)</li>
+                                <li>United Teamster Fund - in network Plan</li>
+                                <li>UMR</li>
+                                <li>Quantum Health</li>
+                                <li>AMERICAN AIRLINES - UHC CHOICE PLUS</li>
+                                <li>UNITED WELFARE FUND</li>
+                                <li>UHC CHOICE PLUS</li>
+                                <li>BLUE CROSS BLUE SHIELD</li>
+                                <li>BLUE ACCESS PPO NY</li>
+                                <li>NJ PPO ALTNET HORIZON MAN CARE 36K0</li>
+                                <li>EPO Plan</li>
+                                <li>Empire Blue Access Gated EPO - In network PCP</li>
+                                <li>FEP BLUE/FEDERAL - Any In network</li>
+                                <li>Oxford Health Plan</li>
+                                <li>Liberty Network Plan - depending on the plan the PCP can be in network or out of network</li>
+                                <li>Freedom Network - needs PCP to be in network with Oxford</li>
+                                <li>Oscar Health</li>
+                                <li>PPO - in/out network</li>
+                                <li>EPO - in network</li>
+                                <li>United Healthcare</li>
+                                <li>Choice Plus</li>
+                                <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
+                                <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
+                                <li>Choice</li>
+                                <li>Choice EPO</li>
+                                <li>WELLCARE</li>
+                                <li>SIMPLE OPEN (PPO)</li>
+                            </ul>
+                            <p><strong>Providers in network:</strong> Dayakishan Chahal, Priti Jain</p>
+                        `;
+                    } else if (data.pcp_change_requirement) {
+                        pcpChangeHTML = `
+                            <div class="section-header">PCP Change Requirement</div>
+                            <p>${data.pcp_change_requirement.details}</p>
+                            
+                            ${insurance === "Medicare" ? `
+                                <div class="section-header">PCP Change Form</div>
+                                <p>
+                                    • If you want to send Healow Sign, 
+                                    <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                    target="_blank" 
+                                    class="form-link">
+                                    click here for Healow Sign Process
+                                    </a>
+                                </p>
+                                <p>If you want to print out the required forms, you can access them below:</p>
+                                <p>
+                                    • <a href="${data.pcp_change_requirement.voluntary_alignment_form}" 
+                                    target="_blank" 
+                                    class="form-link">
+                                    Voluntary Alignment Form
+                                    </a>
+                                </p>
+                                <p>
+                                    • <a href="${data.pcp_change_requirement.sdoh_form}" 
+                                    target="_blank" 
+                                    class="form-link">
+                                    SDoH Form
+                                    </a>
+                                </p>
+                            ` : (data.pcp_change_requirement?.form_link ? `
+                                <div class="phone-submission">
+                                    <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
+                                    <input type="tel" id="phoneNumber" class="phone-input" 
+                                        placeholder="(XXX) XXX-XXXX"
+                                        maxlength="14">
+                                    <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
+                                    <div id="phoneSubmissionMessage"></div>
+                                </div>
+                                <p>
+                                    • If you want to send Healow Sign, 
+                                    <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                    target="_blank" 
+                                    class="form-link">
+                                    click here for Healow Sign Process
+                                    </a>
+                                </p>
+                                <p>
+                                    • If you want to print out the form, 
+                                    <a href="${data.pcp_change_requirement.form_link}" 
+                                    target="_blank" 
+                                    class="form-link">
+                                    click here to access PCP Change Form
+                                    </a>
+                                </p>
+                            ` : '')}
+                        `;
+                    }
+                }
+
                 document.getElementById("output").innerHTML = `
                     <div class="content-wrapper">
                         <div class="left-section">
                             <div class="section-header">Facility Options</div>
                             ${data.facility_options.message}
                             
-                            ${!isUnder18 && data.pcp_change_requirement ? `
-                                <div class="section-header">PCP Change Requirement</div>
-                                <p>${data.pcp_change_requirement.details}</p>
-                                
-                                ${insurance === "Medicare" ? `
-                                    <div class="section-header">PCP Change Form</div>
-                                    <p>
-                                        • If you want to send Healow Sign, 
-                                        <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                                        target="_blank" 
-                                        class="form-link">
-                                        click here for Healow Sign Process
-                                        </a>
-                                    </p>
-                                    <p>If you want to print out the required forms, you can access them below:</p>
-                                    <p>
-                                        • <a href="${data.pcp_change_requirement.voluntary_alignment_form}" 
-                                        target="_blank" 
-                                        class="form-link">
-                                        Voluntary Alignment Form
-                                        </a>
-                                    </p>
-                                    <p>
-                                        • <a href="${data.pcp_change_requirement.sdoh_form}" 
-                                        target="_blank" 
-                                        class="form-link">
-                                        SDoH Form
-                                        </a>
-                                    </p>
-                                ` : (data.pcp_change_requirement?.form_link ? `
-                                    <div class="phone-submission">
-                                        <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
-                                        <input type="tel" id="phoneNumber" class="phone-input" 
-                                            placeholder="(XXX) XXX-XXXX"
-                                            maxlength="14">
-                                        <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
-                                        <div id="phoneSubmissionMessage"></div>
-                                    </div>
-                                    <p>
-                                        • If you want to send Healow Sign, 
-                                        <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                                        target="_blank" 
-                                        class="form-link">
-                                        click here for Healow Sign Process
-                                        </a>
-                                    </p>
-                                    <p>
-                                        • If you want to print out the form, 
-                                        <a href="${data.pcp_change_requirement.form_link}" 
-                                        target="_blank" 
-                                        class="form-link">
-                                        click here to access PCP Change Form
-                                        </a>
-                                    </p>
-                                ` : '')}
-                            ` : ''}
+                            ${pcpChangeHTML}
                         </div>
                         ${providerOptionsHTML}
                     </div>
@@ -653,8 +792,12 @@
                 // Setup phone formatting after content is added
                 setTimeout(setupPhoneNumberFormatting, 100);
             } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById("output").innerHTML = `<div class="error-message">An error occurred while fetching data.</div>`;
+                console.error("Error fetching data after multiple retries:", error);
+                document.getElementById("output").innerHTML = `
+                    <div class="error-message">
+                        An error occurred while fetching data. 
+                        <button onclick="fetchOptions()" class="retry-button">Retry</button>
+                    </div>`;
             }
         }
 
