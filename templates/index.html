@@ -427,6 +427,12 @@
         }
 
         async function submitPhoneNumber(insurance) {
+            // Track the phone submission in Google Analytics
+            gtag('event', 'text_message_sent', {
+                'event_category': 'Engagement',
+                'event_label': `Text Message - ${insurance}`
+            });
+            
             const phoneNumber = document.getElementById("phoneNumber").value;
             try {
                 const response = await fetch('/submit-phone', {
@@ -606,6 +612,17 @@
                 document.getElementById("output").innerHTML = `<div class="error-message">An error occurred while fetching data.</div>`;
             }
         }
+
+        function handleSubmit() {
+            // Track the button click in Google Analytics
+            gtag('event', 'button_click', {
+                'event_category': 'Engagement',
+                'event_label': 'Submit Button'
+            });
+            
+            // Call the original function
+            fetchOptions();
+        }
     </script>
 </head>
 <body>
@@ -693,7 +710,7 @@
                         </label>
                     </div>
                     
-                    <button onclick="fetchOptions()">Submit</button>
+                    <button onclick="handleSubmit()">Submit</button>
                 </div>
 
                 <div class="feedback-section">
