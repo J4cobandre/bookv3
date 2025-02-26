@@ -600,7 +600,7 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Modify the fetchOptions function to use the retry mechanism
+        // Modify the fetchOptions function to include the UHC information as additional data
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -696,15 +696,26 @@
                     </div>
                 `;
 
-                // Add PCP Change Not Required section if applicable
+                // Add PCP Change section with additional UHC information if applicable
                 let pcpChangeHTML = '';
-                if (!isUnder18) {
-                    // Check if it's a United Healthcare insurance
+                if (!isUnder18 && data.pcp_change_requirement) {
+                    const requiresThreeWayCall = data.pcp_change_requirement.details && 
+                        data.pcp_change_requirement.details.includes("3-way call required");
+                    
+                    // Start with the standard PCP change requirement information
+                    pcpChangeHTML = `
+                        <div class="section-header">PCP Change Requirement</div>
+                        <p>${data.pcp_change_requirement.details}</p>
+                        
+                        ${requiresThreeWayCall ? `
+                            <p><strong>Member Services Number:</strong> ${getMemberServicesNumber(insurance)}</p>
+                        ` : ''}
+                    `;
+                    
+                    // Add United Healthcare specific information if applicable
                     if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
-                        pcpChangeHTML = `
-                            <div class="section-header">PCP Change Requirement</div>
-                            <p>PCP Change is <strong>NOT</strong> required for this insurance.</p>
-                            <div class="section-header">United Health Care Line of Business that do not need PCP Election</div>
+                        pcpChangeHTML += `
+                            <div class="section-header">United Health Care Line of Business that do not need PCP Change.</div>
                             <ul style="text-align: left; padding-left: 20px;">
                                 <li>Choice Plus</li>
                                 <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
@@ -712,71 +723,63 @@
                                 <li>POS Choice Plus</li>
                                 <li>Choice EPO</li>
                             </ul>
-                            <p><strong>Providers in network:</strong> Dayakishan Chahal, Priti Jain</p>
                         `;
-                    } else if (data.pcp_change_requirement) {
-                        const requiresThreeWayCall = data.pcp_change_requirement.details && 
-                            data.pcp_change_requirement.details.includes("3-way call required");
-                        
-                        pcpChangeHTML = `
-                            <div class="section-header">PCP Change Requirement</div>
-                            <p>${data.pcp_change_requirement.details}</p>
-                            
-                            ${requiresThreeWayCall ? `
-                                <p><strong>Member Services Number:</strong> ${getMemberServicesNumber(insurance)}</p>
-                            ` : ''}
-                            
-                            ${insurance === "Medicare" ? `
-                                <div class="section-header">PCP Change Form</div>
-                                <p>
-                                    • If you want to send Healow Sign, 
-                                    <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                                    target="_blank" 
-                                    class="form-link">
-                                    click here for Healow Sign Process
-                                    </a>
-                                </p>
-                                <p>If you want to print out the required forms, you can access them below:</p>
-                                <p>
-                                    • <a href="${data.pcp_change_requirement.voluntary_alignment_form}" 
-                                    target="_blank" 
-                                    class="form-link">
-                                    Voluntary Alignment Form
-                                    </a>
-                                </p>
-                                <p>
-                                    • <a href="${data.pcp_change_requirement.sdoh_form}" 
-                                    target="_blank" 
-                                    class="form-link">
-                                    SDoH Form
-                                    </a>
-                                </p>
-                            ` : (data.pcp_change_requirement?.form_link ? `
-                                <div class="phone-submission">
-                                    <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
-                                    <input type="tel" id="phoneNumber" class="phone-input" 
-                                        placeholder="(XXX) XXX-XXXX"
-                                        maxlength="14">
-                                    <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
-                                    <div id="phoneSubmissionMessage"></div>
-                                </div>
-                                <p>
-                                    • If you want to send Healow Sign, 
-                                    <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
-                                    target="_blank" 
-                                    class="form-link">
-                                    click here for Healow Sign Process
-                                    </a>
-                                </p>
-                                <p>
-                                    • If you want to print out the form, 
-                                    <a href="${data.pcp_change_requirement.form_link}" 
-                                    target="_blank" 
-                                    class="form-link">
-                                    click here to access PCP Change Form
-                                    </a>
-                                </p>
-                            ` : '')}
+                    }
+                    
+                    // Add Medicare-specific or form-specific information
+                    if (insurance === "Medicare") {
+                        pcpChangeHTML += `
+                            <div class="section-header">PCP Change Form</div>
+                            <p>
+                                • If you want to send Healow Sign, 
+                                <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                target="_blank" 
+                                class="form-link">
+                                click here for Healow Sign Process
+                                </a>
+                            </p>
+                            <p>If you want to print out the required forms, you can access them below:</p>
+                            <p>
+                                • <a href="${data.pcp_change_requirement.voluntary_alignment_form}" 
+                                target="_blank" 
+                                class="form-link">
+                                Voluntary Alignment Form
+                                </a>
+                            </p>
+                            <p>
+                                • <a href="${data.pcp_change_requirement.sdoh_form}" 
+                                target="_blank" 
+                                class="form-link">
+                                SDoH Form
+                                </a>
+                            </p>
+                        `;
+                    } else if (data.pcp_change_requirement?.form_link) {
+                        pcpChangeHTML += `
+                            <div class="phone-submission">
+                                <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
+                                <input type="tel" id="phoneNumber" class="phone-input" 
+                                    placeholder="(XXX) XXX-XXXX"
+                                    maxlength="14">
+                                <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
+                                <div id="phoneSubmissionMessage"></div>
+                            </div>
+                            <p>
+                                • If you want to send Healow Sign, 
+                                <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
+                                target="_blank" 
+                                class="form-link">
+                                click here for Healow Sign Process
+                                </a>
+                            </p>
+                            <p>
+                                • If you want to print out the form, 
+                                <a href="${data.pcp_change_requirement.form_link}" 
+                                target="_blank" 
+                                class="form-link">
+                                click here to access PCP Change Form
+                                </a>
+                            </p>
                         `;
                     }
                 }
