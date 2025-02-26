@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import case
+import requests
+import json
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///par_log.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://neondb_owner:npg_ynj3laFAPM7Y@ep-shy-heart-a562hdfj-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -15,20 +17,20 @@ def get_pcp_change_form_link(insurance):
     Retrieve PCP change form link based on insurance provider
     """
     pcp_form_links = {
-    "Aetna": "https://drive.google.com/file/d/1h-VkDlIw8tljeHP3djHuoz-mYz5JbTmP/view?usp=sharing",
-    "BC Empire": "https://drive.google.com/file/d/1M8HhUOm5rXpOdkzns_ZVKN9TzDuOnI-c/view?usp=sharing",
-    "BCBS Empire": "https://drive.google.com/file/d/1M8HhUOm5rXpOdkzns_ZVKN9TzDuOnI-c/view?usp=sharing",
+    "Aetna": "https://drive.google.com/file/d/1E-t1kXgILxWG2lsrLJXUyXyo2eh_k7CX/view?usp=drive_link",
+    "BC Empire": "https://drive.google.com/file/d/1YaI9ZJPTeLjJSnlB1sftb8RKN48kcUWb/view?usp=drive_link",
+    "BCBS Empire": "https://drive.google.com/file/d/1YaI9ZJPTeLjJSnlB1sftb8RKN48kcUWb/view?usp=drive_link",
     "Elder Plan": "https://drive.google.com/file/d/1YYqHn22xvViGqsSPZteoRbnQEHoNhVel/view?usp=drive_link",
     "Fidelis": "https://drive.google.com/file/d/1-K2tLlgklynhSvj3bFra387_amNMYCBu/view?usp=drive_link",
-    "Healthfirst Medicaid": "https://drive.google.com/file/d/1anV3flfC1-fPXTHK-YwYIM0FRAnTGdCo/view?usp=sharing",
-    "Healthfirst Medicare": "https://drive.google.com/file/d/1anV3flfC1-fPXTHK-YwYIM0FRAnTGdCo/view?usp=sharing",
-    "Healthfirst Other LOB": "https://drive.google.com/file/d/1anV3flfC1-fPXTHK-YwYIM0FRAnTGdCo/view?usp=sharing",
-    "Humana": "https://drive.google.com/file/d/1kykVPXr0GCVPDFRmdN7g9DsO7fqn1H6b/view?usp=sharing",
+    "Healthfirst Medicaid": "https://drive.google.com/file/d/1QaT8J6j0ZyGascS-NN8ADOJC419mnEi6/view?usp=drive_link",
+    "Healthfirst Medicare": "https://drive.google.com/file/d/1QaT8J6j0ZyGascS-NN8ADOJC419mnEi6/view?usp=drive_link",
+    "Healthfirst Other LOB": "https://drive.google.com/file/d/1QaT8J6j0ZyGascS-NN8ADOJC419mnEi6/view?usp=drive_link",
+    "Humana": "https://drive.google.com/file/d/19oM7dToudm-J-MwZmWa6VOyEPIOlI4jW/view?usp=drive_link",
     "Medicare": "https://drive.google.com/file/d/1uVLcqNum148eJkyO35BfoyiJB46esxt9/view?usp=drive_link",
-    "UHC Medicare": "https://drive.google.com/file/d/123sT5gr6wGg0xCTAnEFbKzWW5FAFe461/view?usp=sharing",
-    "UHC Medicaid NY": "https://drive.google.com/file/d/123sT5gr6wGg0xCTAnEFbKzWW5FAFe461/view?usp=sharing",
-    "UHC other LOB": "https://drive.google.com/file/d/123sT5gr6wGg0xCTAnEFbKzWW5FAFe461/view?usp=sharing",
-    "Wellcare": "https://drive.google.com/file/d/1arW5qNXjRAZJ7kBcPCXYOAZFXbHCnywk/view?usp=sharing"
+    "UHC Medicare": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
+    "UHC Medicaid NY": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
+    "UHC other LOB": "https://drive.google.com/file/d/1RjmXRj2Bs0fJ_NSYeSNdWH8V6c8M0VNC/view?usp=drive_link",
+    "Wellcare": "https://drive.google.com/file/d/1Ue0-Sn21smGaens7RzavXowVIzq3SEak/view?usp=drive_link"
     }
     
     # Normalize insurance name and get link, with fallback
@@ -121,13 +123,13 @@ def get_provider_options():
         print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
 
     if not providers:
-        return jsonify({"error": "No Providers Available. Please book this appointment with Statcare Urgent Care - SCUC."})
+        return jsonify({"error": "No Providers Available. Please book this appointment with SCUC."})
 
     # Existing logic for constructing the response remains the same
     out_of_contract = not providers[0].hfmc_contract
 
     if is_under_18:
-        facility_message = "Patients under 18 should be seen under Statcare Urgent Care - SCUC."
+        facility_message = "Patients under 18 should be seen under SCUC (Urgent Care)."
         facilities = ["SCUC"]
         response = {
             "facility_options": {
@@ -145,10 +147,10 @@ def get_provider_options():
     if out_of_contract:
         # Check if it's a follow-up with out-of-contract insurance
         if is_follow_up:
-            facility_message = "You can only visit Statcare Urgent Care - SCUC."
+            facility_message = "You can only visit SCUC."
             facilities = ["SCUC"]
         else:
-            facility_message = "You can only visit Statcare Urgent Care - SCUC."
+            facility_message = "You can only visit SCUC."
             facilities = ["SCUC"]
         
         # Build response without PCP Change Requirement
@@ -170,15 +172,15 @@ def get_provider_options():
             "<div>"
             "<p>For follow-up appointments:</p>"
             "<ul>"
-            "<li>Preferably book the appointment under Hicksville Family Medical Care - HFMC, but the patient must understand and agree that their primary care provider (PCP) needs to be changed.</li>"
-            "<li>If the patient disagrees, they can only visit Statcare Urgent Care - SCUC.</li>"
+            "<li>Preferably book the appointment under HFMC, but the patient must understand and agree that their primary care provider (PCP) needs to be changed.</li>"
+            "<li>If the patient disagrees, they can only visit SCUC.</li>"
             "</ul>"
             "</div>"
         )
         facilities = ["HFMC"]
     else:
         facility_message = (
-            "Schedule with Hicksville Family Medical Care - HFMC. (Statcare Urgent Care - SCUC is available for same day appointments only.)"
+            "Schedule with HFMC (SCUC is available for same day appointments only)"
         )
         facilities = ["HFMC", "SCUC"]
 
@@ -196,7 +198,10 @@ def get_provider_options():
                 "Insurance has PCP Change Form.",
                 "Medicare requires submission of Voluntary Alignment and SDoH Forms.",
             ] else None,
-
+            "requires_phone": providers[0].pcp_change_requirement.strip() in [
+                "Insurance has PCP Change Form",
+                "Insurance has PCP Change Form.",
+            ]
         },
         "provider_options": [
             {"name": provider.provider_name, "npi": provider.npi}
@@ -206,6 +211,50 @@ def get_provider_options():
     }
     print("Final Response:", response) 
     return jsonify(response)
+
+@app.route('/submit-phone', methods=['POST'])
+def submit_phone():
+    phone = request.json.get('phone')
+    insurance = request.json.get('insurance')
+    
+    if not phone or not insurance:
+        return jsonify({"error": "Phone number and insurance are required"}), 400
+
+    def send_sms(phone_number):
+        url = "https://us-central1-care-plan-beta.cloudfunctions.net/nao-communications/send-message"
+        
+        payload = {
+            "phoneNum": phone_number,
+            "smsText": "Hi, this is Nao Medical.\n\nTo ensure that your visit with our Primary Care Provider (PCP) is properly covered by your insurance, we kindly ask that you elect Nao Medical as your PCP, which you can easily do at the link below. If you do not complete this process, we will not be able to complete your visit.\n\nPCP Change Portal: https://checkin.naomedical.com"
+        }
+        
+        try:
+            response = requests.request("POST", url, headers={}, data=json.dumps(payload, default=str))
+            return {
+                'status_code': response.status_code,
+                'message': response.text,
+                'success': response.status_code == 200
+            }
+        except Exception as e:
+            return {
+                'status_code': 500,
+                'message': str(e),
+                'success': False
+            }
+
+    # Send the SMS
+    result = send_sms(phone)
+    
+    if result['success']:
+        return jsonify({
+            "message": "Text message sent successfully",
+            "phone": phone,
+            "insurance": insurance
+        })
+    else:
+        return jsonify({
+            "error": f"Failed to send text message: {result['message']}"
+        }), result['status_code']
 
 if __name__ == '__main__':
     app.run(debug=True)
