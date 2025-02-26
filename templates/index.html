@@ -579,7 +579,28 @@
             throw lastError;
         }
 
-        // Modify the fetchOptions function to use the retry mechanism
+        // Add a function to get Member Services number based on insurance
+        function getMemberServicesNumber(insurance) {
+            const memberServicesMap = {
+                "Centivo": "866-355-5999",
+                "Oscar Health": "855-672-2755",
+                "Emblem Health-GHI": "(800) 624-2414",
+                "Magnacare": "(888) 799-6465",
+                "Emblem Health HIP": "(800) 447-8255"
+            };
+            
+            // Check if the insurance exists in our mapping
+            for (const [insName, number] of Object.entries(memberServicesMap)) {
+                if (insurance.includes(insName)) {
+                    return number;
+                }
+            }
+            
+            // Default message if no match is found
+            return "Please check the back of the Patient's Insurance ID card";
+        }
+
+        // Modify the fetchOptions function to include Member Services number
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -718,9 +739,16 @@
                             <p><strong>Providers in network:</strong> Dayakishan Chahal, Priti Jain</p>
                         `;
                     } else if (data.pcp_change_requirement) {
+                        const requiresThreeWayCall = data.pcp_change_requirement.details && 
+                            data.pcp_change_requirement.details.includes("3-way call required");
+                        
                         pcpChangeHTML = `
                             <div class="section-header">PCP Change Requirement</div>
                             <p>${data.pcp_change_requirement.details}</p>
+                            
+                            ${requiresThreeWayCall ? `
+                                <p><strong>Member Services Number:</strong> ${getMemberServicesNumber(insurance)}</p>
+                            ` : ''}
                             
                             ${insurance === "Medicare" ? `
                                 <div class="section-header">PCP Change Form</div>
@@ -887,7 +915,7 @@
                     <div class="filter-group">
                         <label>
                             <input type="checkbox" id="isUnder18">
-                            Is Patient under the age of 18?
+                            Is patient under the age of 18?
                         </label>
                     </div>
                     
