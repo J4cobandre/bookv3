@@ -557,7 +557,7 @@
             return noPCPChangeInsurances.some(ins => insurance.includes(ins));
         }
 
-        // Add a retry function for fetch operations
+        // Modify the fetchWithRetry function to handle retries more gracefully
         async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
             let lastError;
             
@@ -600,7 +600,7 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Modify the fetchOptions function to include Member Services number
+        // Modify the fetchOptions function to use the retry mechanism
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -699,42 +699,18 @@
                 // Add PCP Change Not Required section if applicable
                 let pcpChangeHTML = '';
                 if (!isUnder18) {
-                    if (isPCPChangeNotNeeded(insurance)) {
+                    // Check if it's a United Healthcare insurance
+                    if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
                         pcpChangeHTML = `
                             <div class="section-header">PCP Change Requirement</div>
                             <p>PCP Change is <strong>NOT</strong> required for this insurance.</p>
-                            <div class="section-header">Insurance Lines of Business - No PCP Change Needed</div>
+                            <div class="section-header">United Health Care Line of Business that do not need PCP Election</div>
                             <ul style="text-align: left; padding-left: 20px;">
-                                <li>Aetna Commercial</li>
-                                <li>OPEN ACCESS AETNA SELECT</li>
-                                <li>AETNA CHOICE POS II</li>
-                                <li>OPEN ACCESS ELECT CHOICE (OAEPO)</li>
-                                <li>United Teamster Fund - in network Plan</li>
-                                <li>UMR</li>
-                                <li>Quantum Health</li>
-                                <li>AMERICAN AIRLINES - UHC CHOICE PLUS</li>
-                                <li>UNITED WELFARE FUND</li>
-                                <li>UHC CHOICE PLUS</li>
-                                <li>BLUE CROSS BLUE SHIELD</li>
-                                <li>BLUE ACCESS PPO NY</li>
-                                <li>NJ PPO ALTNET HORIZON MAN CARE 36K0</li>
-                                <li>EPO Plan</li>
-                                <li>Empire Blue Access Gated EPO - In network PCP</li>
-                                <li>FEP BLUE/FEDERAL - Any In network</li>
-                                <li>Oxford Health Plan</li>
-                                <li>Liberty Network Plan - depending on the plan the PCP can be in network or out of network</li>
-                                <li>Freedom Network - needs PCP to be in network with Oxford</li>
-                                <li>Oscar Health</li>
-                                <li>PPO - in/out network</li>
-                                <li>EPO - in network</li>
-                                <li>United Healthcare</li>
                                 <li>Choice Plus</li>
                                 <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
                                 <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
-                                <li>Choice</li>
+                                <li>POS Choice Plus</li>
                                 <li>Choice EPO</li>
-                                <li>WELLCARE</li>
-                                <li>SIMPLE OPEN (PPO)</li>
                             </ul>
                             <p><strong>Providers in network:</strong> Dayakishan Chahal, Priti Jain</p>
                         `;
