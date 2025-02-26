@@ -743,7 +743,13 @@
                     } else if (data.pcp_change_requirement?.form_link) {
                         pcpChangeHTML += `
                             <div class="phone-submission">
-                                <p>If you want to send the PCP Change Portal Link to the patient, please enter their phone number below.</p>
+                                <p>If you want to send the 
+                                    <a href="https://checkin.naomedical.com"
+                                    target="_blank" 
+                                    class="form-link">PCP Change Portal Link
+                                    </a>       
+                                    to the patient, please enter their phone number below,
+                                </p>
                                 <input type="tel" id="phoneNumber" class="phone-input" 
                                     placeholder="(XXX) XXX-XXXX"
                                     maxlength="14">
