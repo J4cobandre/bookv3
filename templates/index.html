@@ -473,6 +473,42 @@
             font-weight: bold;
             margin-top: 10px;
         }
+
+        .filter-toggle {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #1e3565;
+        }
+        
+        .filter-toggle input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        tr[data-pcp-eligible="true"] {
+            background-color: #f0f7ee;
+        }
+
+        /* Add these styles to your existing CSS */
+        .button-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
     </style>
     <script>
         function formatPhoneNumber(input) {
@@ -507,6 +543,7 @@
             }
         }
 
+        // Modify the submitPhoneNumber function to show a loading spinner
         async function submitPhoneNumber(insurance) {
             // Track the phone submission in Google Analytics
             gtag('event', 'text_message_sent', {
@@ -515,6 +552,16 @@
             });
             
             const phoneNumber = document.getElementById("phoneNumber").value;
+            const submitButton = event.target; // Get the button that was clicked
+            const originalButtonText = submitButton.innerHTML;
+            
+            // Disable the button and show loading spinner
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <div class="button-spinner"></div>
+                Sending...
+            `;
+            
             try {
                 const response = await fetch('/submit-phone', {
                     method: 'POST',
@@ -529,12 +576,16 @@
                 const data = await response.json();
                 
                 if (data.error) {
-                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error">${data.error}</div>`;
+                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error-message">${data.error}</div>`;
                 } else {
-                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="success">Text message sent successfully!</div>`;
+                    document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="success-message">Text message sent successfully!</div>`;
                 }
             } catch (error) {
-                document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error">Failed to send text message</div>`;
+                document.getElementById("phoneSubmissionMessage").innerHTML = `<div class="error-message">Failed to send text message</div>`;
+            } finally {
+                // Re-enable the button and restore original text
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
             }
         }
 
@@ -600,7 +651,78 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Modify the fetchOptions function to place UHC information after the form link
+        // Add a function to check if a provider is PCP eligible for specific location/insurance
+        function isPcpEligible(providerName, location, insurance) {
+            // Hardcoded mapping for PCP eligibility
+            const pcpEligibilityMap = {
+                "Crown Heights": {
+                    "Healthfirst Medicare": ["Max Rubin", "Nickecha Redway", "Dayakishan Chahal"]
+                }
+                // Add more locations and insurances as needed
+            };
+            
+            // Check if we have data for this location and insurance
+            if (pcpEligibilityMap[location] && 
+                pcpEligibilityMap[location][insurance]) {
+                // Return true if the provider is in the eligible list
+                return pcpEligibilityMap[location][insurance].includes(providerName);
+            }
+            
+            // Default to showing all providers if no mapping exists
+            return true;
+        }
+
+        // Modify the provider options HTML generation to include a filter toggle
+        function createProviderOptionsHTML(data, site, insurance) {
+            // Create a checkbox for filtering
+            const filterCheckboxHTML = `
+                <div class="filter-toggle">
+                    <label>
+                        <input type="checkbox" id="pcpEligibleOnly" onchange="filterProviderTable()">
+                        Show providers that are eligible to be selected as PCP
+                    </label>
+                </div>
+            `;
+            
+            // Create the table with all providers
+            return `
+                <div class="right-section">
+                    <div class="section-header">Provider Options</div>
+                    ${filterCheckboxHTML}
+                    <div class="table-container">
+                        <table id="providerTable">
+                            <thead>
+                                <tr>
+                                    <th>Provider Name</th>
+                                    <th>${insurance.toLowerCase().indexOf('healthfirst') !== -1 ? "Healthfirst ID" : "Provider NPI"}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.provider_options.map((provider) => `
+                                    <tr data-pcp-eligible="${isPcpEligible(provider.name, site, insurance)}">
+                                        <td>${provider.name}</td>
+                                        <td>${provider.npi}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Add a function to filter the provider table based on the checkbox
+        function filterProviderTable() {
+            const showOnlyEligible = document.getElementById("pcpEligibleOnly").checked;
+            const rows = document.querySelectorAll("#providerTable tbody tr");
+            
+            rows.forEach(row => {
+                const isEligible = row.getAttribute("data-pcp-eligible") === "true";
+                row.style.display = (showOnlyEligible && !isEligible) ? "none" : "";
+            });
+        }
+
+        // Modify the fetchOptions function to use the new provider options HTML
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -670,31 +792,6 @@
                     document.getElementById("output").innerHTML = `<div class="error-message">${data.error}</div>`;
                     return;
                 }
-
-                // Create provider options HTML regardless of facility status
-                const providerOptionsHTML = `
-                    <div class="right-section">
-                        <div class="section-header">Provider Options</div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Provider Name</th>
-                                        <th>${insurance.includes("Healthfirst") ? "Healthfirst ID" : "Provider NPI"}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${data.provider_options.map((provider) => `
-                                        <tr>
-                                            <td>${provider.name}</td>
-                                            <td>${provider.npi}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
 
                 // Add PCP Change section with additional UHC information if applicable
                 let pcpChangeHTML = '';
@@ -790,6 +887,9 @@
                     }
                 }
 
+                // Use the new function to create provider options HTML
+                const providerOptionsHTML = createProviderOptionsHTML(data, site, insurance);
+                
                 document.getElementById("output").innerHTML = `
                     <div class="content-wrapper">
                         <div class="left-section">
