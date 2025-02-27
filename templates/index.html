@@ -651,9 +651,10 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Add a function to check if a provider is PCP eligible for specific location/insurance
+        // Function to check if a provider is PCP eligible (temporarily disabled)
         function isPcpEligible(providerName, location, insurance) {
-            // Hardcoded mapping for PCP eligibility
+            // DISABLED: Hardcoded mapping for PCP eligibility
+            /*
             const pcpEligibilityMap = {
                 "Crown Heights": {
                     "Healthfirst Medicare": ["Max Rubin", "Nickecha Redway", "Dayakishan Chahal"]
@@ -667,21 +668,24 @@
                 // Return true if the provider is in the eligible list
                 return pcpEligibilityMap[location][insurance].includes(providerName);
             }
+            */
             
-            // Default to showing all providers if no mapping exists
+            // Default to showing all providers while feature is disabled
             return true;
         }
 
-        // Modify the provider options HTML generation to include a filter toggle
+        // Modify the provider options HTML generation to include a disabled filter toggle
         function createProviderOptionsHTML(data, site, insurance) {
-            // Create a checkbox for filtering
+            // Create a disabled checkbox for filtering (feature coming soon)
             const filterCheckboxHTML = `
+                <!-- PCP Eligibility filter temporarily disabled
                 <div class="filter-toggle">
                     <label>
-                        <input type="checkbox" id="pcpEligibleOnly" onchange="filterProviderTable()">
-                        Show providers that are eligible to be selected as PCP
+                        <input type="checkbox" id="pcpEligibleOnly" onchange="filterProviderTable()" disabled>
+                        Show only PCP-eligible providers (Coming soon)
                     </label>
                 </div>
+                -->
             `;
             
             // Create the table with all providers
@@ -699,7 +703,7 @@
                             </thead>
                             <tbody>
                                 ${data.provider_options.map((provider) => `
-                                    <tr data-pcp-eligible="${isPcpEligible(provider.name, site, insurance)}">
+                                    <tr data-pcp-eligible="true">
                                         <td>${provider.name}</td>
                                         <td>${provider.npi}</td>
                                     </tr>
@@ -711,8 +715,10 @@
             `;
         }
 
-        // Add a function to filter the provider table based on the checkbox
+        // Filter provider table function (temporarily disabled)
         function filterProviderTable() {
+            // DISABLED: Filtering functionality
+            /*
             const showOnlyEligible = document.getElementById("pcpEligibleOnly").checked;
             const rows = document.querySelectorAll("#providerTable tbody tr");
             
@@ -720,6 +726,7 @@
                 const isEligible = row.getAttribute("data-pcp-eligible") === "true";
                 row.style.display = (showOnlyEligible && !isEligible) ? "none" : "";
             });
+            */
         }
 
         // Modify the fetchOptions function to use the new provider options HTML
