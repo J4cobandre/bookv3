@@ -86,7 +86,7 @@ def get_provider_options():
     providers = None
     # Define the priority order for providers
     priority_1 = [
-        "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Mansoor Farooki", 
+        "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Michael Ihemaguba" , "Mansoor Farooki", 
         "Abel Infante", "Fazle Showon", "Barbara Phillips-Cole", "Rakesh Koul"
     ]
     priority_2 = [
