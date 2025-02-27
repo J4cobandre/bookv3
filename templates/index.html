@@ -729,7 +729,7 @@
             */
         }
 
-        // Modify the fetchOptions function to use the new provider options HTML
+        // Modify the fetchOptions function to include Aetna information
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -800,7 +800,7 @@
                     return;
                 }
 
-                // Add PCP Change section with additional UHC information if applicable
+                // Add PCP Change section with additional insurance-specific information if applicable
                 let pcpChangeHTML = '';
                 if (!isUnder18 && data.pcp_change_requirement) {
                     const requiresThreeWayCall = data.pcp_change_requirement.details && 
@@ -879,16 +879,31 @@
                         `;
                     }
                     
-                    // Add United Healthcare specific information if applicable - now placed after the form links
+                    // Add United Healthcare specific information if applicable
                     if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
                         pcpChangeHTML += `
-                            <div class="section-header">United Health Care Line of Business that do not need PCP Change.</div>
+                            <div class="section-header">Line of Business that do not need PCP Change.</div>
                             <ul style="text-align: left; padding-left: 20px;">
                                 <li>Choice Plus</li>
                                 <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
                                 <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
                                 <li>POS Choice Plus</li>
                                 <li>Choice EPO</li>
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
+                        `;
+                    }
+                    
+                    // Add Aetna specific information if applicable
+                    if (insurance.includes("Aetna")) {
+                        pcpChangeHTML += `
+                            <div class="section-header">Line of Business that do not need PCP Change.</div>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>OPEN ACCESS AETNA SELECT</li>
+                                <li>OPEN ACCESS MANAGED CHOICE (MC)</li>
+                                <li>AETNA CHOICE POS II</li>
+                                <li>OPEN ACCESS ELECT CHOICE (OAEPO)</li>
+                                <li>Preferred Provider Organization (PPO)</li>
                             </ul>
                         `;
                     }
