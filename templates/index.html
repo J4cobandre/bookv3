@@ -894,6 +894,17 @@
                         `;
                     }
                     
+                    // Add Oxford specific information if applicable
+                    if (insurance.includes("Oxford")) {
+                        pcpChangeHTML += `
+                            <div class="section-header">Line of Business that do not need PCP Change.</div>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>Liberty Network</li>
+                                <li>Freedom Network</li>
+                            </ul>
+                        `;
+                    }
+                    
                     // Add Aetna specific information if applicable
                     if (insurance.includes("Aetna")) {
                         pcpChangeHTML += `
