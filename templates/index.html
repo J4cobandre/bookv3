@@ -20,40 +20,49 @@
     
     <style>
         body {
-            font-family: 'Adamina', serif;
+            font-family: 'Inter', 'Adamina', sans-serif;
             margin: 0;
             padding: 0;
             text-align: left;
-            background-color: #f4f4f4;
-            color: #1e3565;
-            line-height: 1.6;
+            background-color: rgb(245 251 244); /* Updated background color */
+            color: #2c3e50;
+            line-height: 1.7;
             width: 100%;
         }
         h1 {
             color: #1e3565;
-            margin-bottom: 30px;
-            font-weight: bold;
+            margin-bottom: 5px;
+            font-weight: 700;
+            font-size: 2.5rem;
         }
-        select, button {
-            font-family: 'Adamina', serif;
-            margin: 10px 0;
-            padding: 10px;
+        select, button, input {
+            font-family: 'Inter', 'Adamina', sans-serif;
+            padding: 12px;
             width: 100%;
             max-width: 300px;
-            border: 1px solid #1e3565;
-            border-radius: 4px;
-            color: #1e3565;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1e3565;
+            box-shadow: 0 0 0 3px rgba(30, 53, 101, 0.1);
         }
         button {
-            background-color: #9acf8c;
-            color: #1e3565;
+            background-color: #1e3565;
+            color: white;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
         button:hover {
-            background-color: #7bb56f;
-            transform: scale(1.05);
+            background-color: #2a4980;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         table {
             width: 100%;
@@ -61,84 +70,125 @@
             margin: auto;
             border-collapse: collapse;
             background-color: white;
-            box-shadow: 0 2px 5px rgba(30, 53, 101, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
         }
         table, th, td {
-            border: 1px solid #1e3565;
+            border: none;
             text-align: left;
         }
         th {
             background-color: #1e3565;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            padding: 15px;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
         }
         .form-link {
-            color: #1e3565;
+            color: #3182ce;
             text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
         }
         .form-link:hover {
-            color: #9acf8c;
-            text-decoration: underline;
+            color: #2c5282;
+            border-bottom: 1px solid #2c5282;
         }
         #output {
             background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
-            color: #1e3565;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            color: #2c3e50;
             width: 100%;
             max-width: 1800px;
         }
         .section-header {
             color: #1e3565;
             margin-top: 15px;
-            font-weight: bold;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #edf2f7;
         }
         .feedback-section {
             background-color: #f9f9f9;
-            border-radius: 1px;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
         }
         .dropdown-container {
-            display: flex; /* Align items horizontally */
-            justify-content: center; /* Center the items */
-            gap: 20px; /* Space between dropdowns */
-            margin-bottom: 0px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 15px;
         }
 
         .dropdown-item {
-            display: flex; /* Align label and dropdown horizontally */
-            align-items: center; /* Vertically center label and dropdown */
-            gap: 10px; /* Space between label and dropdown */
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .checkbox-container {
-            display: flex; /* Align items horizontally */
-            justify-content: center; /* Center the items */
-            gap: 20px; /* Space between dropdowns */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
-        .checkbox-container label {
-            font-weight: bold; /* Make text bold */
-            margin: 0;
-            padding: 0;
+        .checkbox-item {
+            display: flex;
+            align-items: center;
         }
 
-        select {
-            padding: 10px;
-            font-family: 'Adamina', serif;
-            border: 1px solid #1e3565;
-            border-radius: 4px;
-            color: #1e3565;
+        .checkbox-item input[type="checkbox"] {
+            margin: 0;
+            margin-right: 10px;
+            width: auto;
         }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .filter-group label.select-label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .filter-group select, 
+        .filter-group input[type="text"] {
+            width: 100%;
+            margin: 0;
+        }
+        
+        button[type="submit"],
+        button.submit-button {
+            width: 100%;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 600px) {
             body {
-                padding: 10px;
+                padding: 15px;
             }
             select, button {
                 max-width: 100%;
@@ -148,52 +198,65 @@
             }
         }
         .phone-submission {
-            margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             background-color: #f9f9f9;
-            border-radius: 5px;
-            border: 1px solid #9acf8c;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
         }
 
         .phone-input {
-            font-family: 'Adamina', serif;
-            padding: 10px;
-            margin: 10px 0;
+            font-family: 'Inter', 'Adamina', sans-serif;
+            padding: 12px;
+            margin: 12px 0;
             width: 100%;
             max-width: 300px;
-            border: 1px solid #1e3565;
-            border-radius: 4px;
-            color: #1e3565;
-            font-size: 16px; /* Make the font size larger for better readability */
-            letter-spacing: 0.5px; /* Add slight spacing between characters */
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            color: #2c3e50;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .phone-input::placeholder {
-            color: #999;
+            color: #a0aec0;
         }
 
         .success-message {
-            color: #7bb56f;
-            margin-top: 10px;
-            font-weight: bold;
+            color: #38a169;
+            margin-top: 12px;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #f0fff4;
+            border-radius: 4px;
         }
 
         .error-message {
-            color: #ff6b6b;
-            margin-top: 10px;
-            font-weight: bold;
+            color: #e53e3e;
+            margin-top: 12px;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #fff5f5;
+            border-radius: 4px;
         }
 
         .content-wrapper {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             align-items: stretch;
+            margin-top: 15px;
         }
 
         .left-section {
             flex: 1;
             max-width: 50%;
             text-align: left;
+            margin-left: 15px;
+            padding-top: 0px;
+            padding-left: 25px;
+            padding-right: 25px;
+            padding-bottom: 25px;
         }
 
         .right-section {
@@ -201,20 +264,24 @@
             max-width: 50%;
             display: flex;
             flex-direction: column;
+            background: white;
+            padding-top: 0px;
+            padding-left: 25px;
+            padding-right: 25px;
+            padding-bottom: 25px;
+            margin-bottom: 20px;
+            margin-right: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
         .table-container {
-            margin-top: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #edf2f7;
+            border-radius: 8px;
             overflow-y: auto;
-            max-height: 660px; /* Set a max height that matches left content */
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            max-height: 710px; /* Dynamic height based on viewport */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
         }
 
         thead {
@@ -226,39 +293,35 @@
         th {
             background-color: #1e3565;
             color: white;
-            font-weight: bold;
-            padding: 12px;
+            font-weight: 600;
+            padding: 15px;
             text-align: left;
             border: none;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 15px;
+            border-bottom: 1px solid #edf2f7;
             background-color: white;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
         }
 
         /* Style the scrollbar */
         .table-container::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         .table-container::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         .table-container::-webkit-scrollbar-thumb {
-            background: #9acf8c;
-            border-radius: 4px;
+            background: #a0aec0;
+            border-radius: 6px;
         }
 
         .table-container::-webkit-scrollbar-thumb:hover {
-            background: #7bb56f;
+            background: #718096;
         }
 
         @media (max-width: 900px) {
@@ -267,6 +330,7 @@
             }
             .left-section, .right-section {
                 max-width: 100%;
+                margin-bottom: 20px;
             }
         }
 
@@ -275,90 +339,109 @@
             flex-direction: column;
             min-height: 100vh;
             width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .header {
             width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 15px 25px;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
+            max-width: fit-content;
+            margin: 0 auto;
         }
 
-        .header h1 {
-            font-size: clamp(24px, 3vw, 48px); /* Minimum 24px, Maximum 48px, scales with viewport */
+        .header-logo {
+            height: 50px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .header-title {
+            font-size: clamp(24px, 1.95vw, 36px);
             margin: 0;
-            padding-top: 20px;
+            padding: 0;
+            color: #0a1c3e; /* Darker blue color */
+            text-align: center;
+            font-weight: 700;
+            line-height: 1.2;
+            width: auto;
+            max-width: 100%;
         }
-
+        
         .main-content {
             display: flex;
-            gap: 20px;
-            padding: 20px;
+            gap: 30px;
+            padding: 0;
             width: 100%;
             box-sizing: border-box;
         }
 
         .left-column {
-            width: 20%;
-            min-width: 200px;
+            width: 25%;
+            min-width: 250px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
 
         .filters {
-            padding: 20px;
+            padding: 25px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
         .filter-group {
-            margin-bottom: 15px;
+            display: flex;
+            margin-bottom: 10px;
             text-align: left;
         }
 
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
+        .filter-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            margin-right: 10px;
+            cursor: pointer;
         }
-
-        .filter-group select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        /* Label for select elements */
+        .select-label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         .results {
             flex: 1;
-            min-height: 300px; /* Match height of left column */
-            padding: 20px;
+            min-height: 300px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
-            position: relative; /* Add this to make absolute positioning work */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
 
         /* Make both main containers have same minimum height */
         .filters, .results {
-            min-height: 300px;
-        }
-
-        .content-wrapper {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            height: 100%;
-        }
-
-        .left-section, 
-        .right-section {
-            flex: 1;
-            height: 100%;
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-y: auto;
-            flex: 1;
+            min-height: 200px;
         }
 
         /* Improve mobile responsiveness */
@@ -408,6 +491,7 @@
             .page-container {
                 width: 100%;
                 overflow-x: hidden;
+                padding: 10px;
             }
             
             select, button, .phone-input {
@@ -418,25 +502,10 @@
         }
 
         .feedback-section {
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-top: 5px;
-            padding-bottom: 20px;
+            padding: 25px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(30, 53, 101, 0.1);
-        }
-
-        .form-link {
-            color: #1e3565;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        .form-link:hover {
-            color: #9acf8c;
-            text-decoration: underline;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
         .loading-container {
@@ -444,7 +513,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: 50px;
             text-align: center;
             height: 100%;
             width: 100%;
@@ -460,7 +529,7 @@
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         @keyframes spin {
@@ -470,18 +539,19 @@
 
         .loading-text {
             color: #1e3565;
-            font-weight: bold;
-            margin-top: 10px;
+            font-weight: 600;
+            margin-top: 15px;
         }
 
         .filter-toggle {
-            margin-bottom: 10px;
-            font-weight: bold;
             color: #1e3565;
+            display: flex;
+            align-items: center;
         }
         
         .filter-toggle input[type="checkbox"] {
-            margin-right: 5px;
+            margin-right: 8px;
+            width: auto;
         }
         
         tr[data-pcp-eligible="true"] {
@@ -501,13 +571,97 @@
             vertical-align: middle;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+        
+        /* New styles for improved design */
+        .divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        ul li {
+            margin-bottom: 8px;
+        }
+        
+        /* Provider search filter */
+        .provider-search {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-family: 'Inter', 'Adamina', sans-serif;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Button styling for links that should look like buttons */
+        .button-link {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #1e3565;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .button-link:hover {
+            background-color: #2a4980;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Card styling for sections */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #1e3565;
+        }
+
+        /* Remove top margin from paragraphs in specific sections */
+        .left-section p, 
+        .phone-submission p,
+        .feedback-section p {
+            margin-top: 0;
+            margin-block-start: 0;
+        }
+        
+        /* Keep bottom margin for spacing between paragraphs */
+        .left-section p:not(:last-child),
+        .phone-submission p:not(:last-child),
+        .feedback-section p:not(:last-child) {
+            margin-bottom: 1em;
+            margin-block-end: 1em;
+        }
+
+        /* Adjust spacing for form links */
+        .left-section p + p {
+            margin-top: 5px;
+        }
+        
+        /* First paragraph after a section header or div gets normal top margin */
+        .section-header + p,
+        .phone-submission + p {
+            margin-top: 15px;
         }
     </style>
     <script>
@@ -598,7 +752,7 @@
                 "UHC CHOICE PLUS", "BLUE CROSS BLUE SHIELD", "BLUE ACCESS PPO NY",
                 "NJ PPO ALTNET HORIZON MAN CARE 36K0", "EPO Plan", 
                 "Empire Blue Access Gated EPO", "FEP BLUE/FEDERAL",
-                "Oxford Health Plan", "Liberty Network Plan", "Freedom Network",
+                "Oxford Health Plan", "Liberty Network", "Freedom Network",
                 "Oscar Health", "PPO", "EPO", "United Healthcare", "Choice Plus",
                 "LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE", 
                 "UHC Dual Complete NY-S001 (PPO D-SNP)", "Choice", "Choice EPO",
@@ -651,48 +805,50 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Function to check if a provider is PCP eligible (temporarily disabled)
+        // Function to check if a provider is PCP eligible based on priority
         function isPcpEligible(providerName, location, insurance) {
-            // DISABLED: Hardcoded mapping for PCP eligibility
-            /*
-            const pcpEligibilityMap = {
-                "Crown Heights": {
-                    "Healthfirst Medicare": ["Max Rubin", "Nickecha Redway", "Dayakishan Chahal"]
-                }
-                // Add more locations and insurances as needed
-            };
+            // Define priority lists from the backend
+            const priority_1 = [
+                "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Michael Ihemaguba", "Mansoor Farooki", 
+                "Abel Infante", "Fazle Showon", "Barbara Phillips-Cole", "Rakesh Koul"
+            ];
             
-            // Check if we have data for this location and insurance
-            if (pcpEligibilityMap[location] && 
-                pcpEligibilityMap[location][insurance]) {
-                // Return true if the provider is in the eligible list
-                return pcpEligibilityMap[location][insurance].includes(providerName);
+            const priority_2 = [
+                "Rosetta Romero-Williams", "Shelly Twito", "Suraiya Chowdhury", 
+                "Nickecha Redway", "Rainier Chirinos", "Mark Basaritmand", "Suresh Sagar"
+            ];
+            
+            // For Fidelis, Emblem Health HIP, and Emblem Health-GHI, only priority_1 and priority_2 providers are PCP eligible
+            if (insurance === "Fidelis" || 
+                insurance === "Emblem Health HIP" || 
+                insurance === "Emblem Health-GHI") {
+                
+                return priority_1.includes(providerName) || priority_2.includes(providerName);
             }
-            */
             
-            // Default to showing all providers while feature is disabled
+            // For all other insurances, all providers are eligible (default behavior)
             return true;
         }
 
-        // Modify the provider options HTML generation to include a disabled filter toggle
+        // Modify the createProviderOptionsHTML function to include a search filter and PCP eligibility checkbox
         function createProviderOptionsHTML(data, site, insurance) {
-            // Create a disabled checkbox for filtering (feature coming soon)
-            const filterCheckboxHTML = `
-                <!-- PCP Eligibility filter temporarily disabled
+            // Create a search input for providers
+            const searchInputHTML = `
+                <input type="text" id="providerSearch" class="provider-search" 
+                       placeholder="Search for a provider..." 
+                       onkeyup="filterProviders()">
+                
                 <div class="filter-toggle">
-                    <label>
-                        <input type="checkbox" id="pcpEligibleOnly" onchange="filterProviderTable()" disabled>
-                        Show only PCP-eligible providers (Coming soon)
-                    </label>
+                    <input type="checkbox" id="showPcpEligibleOnly" onchange="filterProviders()">
+                    <label for="showPcpEligibleOnly">Eligible for PCP</label>
                 </div>
-                -->
             `;
             
             // Create the table with all providers
             return `
                 <div class="right-section">
                     <div class="section-header">Provider Options</div>
-                    ${filterCheckboxHTML}
+                    ${searchInputHTML}
                     <div class="table-container">
                         <table id="providerTable">
                             <thead>
@@ -703,7 +859,7 @@
                             </thead>
                             <tbody>
                                 ${data.provider_options.map((provider) => `
-                                    <tr data-pcp-eligible="true">
+                                    <tr data-pcp-eligible="${isPcpEligible(provider.name, site, insurance)}">
                                         <td>${provider.name}</td>
                                         <td>${provider.npi}</td>
                                     </tr>
@@ -715,21 +871,37 @@
             `;
         }
 
-        // Filter provider table function (temporarily disabled)
-        function filterProviderTable() {
-            // DISABLED: Filtering functionality
-            /*
-            const showOnlyEligible = document.getElementById("pcpEligibleOnly").checked;
-            const rows = document.querySelectorAll("#providerTable tbody tr");
+        // Update the filterProviders function to also filter by PCP eligibility
+        function filterProviders() {
+            const input = document.getElementById('providerSearch');
+            const filter = input.value.toUpperCase();
+            const showPcpEligibleOnly = document.getElementById('showPcpEligibleOnly').checked;
+            const table = document.getElementById('providerTable');
+            const tr = table.getElementsByTagName('tr');
             
-            rows.forEach(row => {
-                const isEligible = row.getAttribute("data-pcp-eligible") === "true";
-                row.style.display = (showOnlyEligible && !isEligible) ? "none" : "";
-            });
-            */
+            for (let i = 1; i < tr.length; i++) { // Start from 1 to skip header row
+                const tdName = tr[i].getElementsByTagName('td')[0];
+                const tdNPI = tr[i].getElementsByTagName('td')[1];
+                const isPcpEligible = tr[i].getAttribute('data-pcp-eligible') === 'true';
+                
+                if (tdName || tdNPI) {
+                    const nameText = tdName.textContent || tdName.innerText;
+                    const npiText = tdNPI.textContent || tdNPI.innerText;
+                    
+                    const matchesSearch = nameText.toUpperCase().indexOf(filter) > -1 || 
+                                         npiText.toUpperCase().indexOf(filter) > -1;
+                    
+                    // Show row if it matches search AND (either PCP filter is off OR provider is PCP eligible)
+                    if (matchesSearch && (!showPcpEligibleOnly || isPcpEligible)) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
         }
 
-        // Modify the fetchOptions function to include Aetna information
+        // Modify the fetchOptions function to use the improved retry mechanism
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -800,19 +972,88 @@
                     return;
                 }
 
-                // Add PCP Change section with additional insurance-specific information if applicable
+                // Add PCP Change section with a cleaner design
                 let pcpChangeHTML = '';
                 if (!isUnder18 && data.pcp_change_requirement) {
                     const requiresThreeWayCall = data.pcp_change_requirement.details && 
                         data.pcp_change_requirement.details.includes("3-way call required");
                     
+                    const hasPcpChangeForm = data.pcp_change_requirement.details && 
+                        (data.pcp_change_requirement.details.includes("Insurance has PCP Change Form") || 
+                         data.pcp_change_requirement.details === "Insurance has PCP Change Form.");
+                    
                     // Start with the standard PCP change requirement information
                     pcpChangeHTML = `
                         <div class="section-header">PCP Change Requirement</div>
-                        <p>${data.pcp_change_requirement.details}</p>
+                        <p><strong>${data.pcp_change_requirement.details}</strong></p>
                         
                         ${requiresThreeWayCall ? `
                             <p><strong>Member Services Number:</strong> ${getMemberServicesNumber(insurance)}</p>
+                        ` : ''}
+                        
+                        ${(insurance.includes("UHC") || insurance.includes("United Healthcare")) ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>Choice Plus</li>
+                                <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
+                                <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
+                                <li>POS Choice Plus</li>
+                                <li>Choice EPO</li>
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
+                        ` : ''}
+                        
+                        ${insurance.includes("Oxford") ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>Liberty Network</li>
+                                <li>Freedom Network</li>
+                            </ul>
+                        ` : ''}
+
+                        ${insurance.includes("Aetna") ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>OPEN ACCESS AETNA SELECT</li>
+                                <li>OPEN ACCESS MANAGED CHOICE (MC)</li>
+                                <li>AETNA CHOICE POS II</li>
+                                <li>OPEN ACCESS ELECT CHOICE (OAEPO)</li>
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
+                        ` : ''}
+
+                        ${(insurance.includes("BC Empire") || insurance.includes("BCBS Empire")) ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>BLUE ACCESS PPO NY</li>
+                                <li>NJ PPO ALTNET HORIZON MAN CARE 36K0</li>
+                                <li>EPO Plan</li>
+                                <li>Direct POS</li>
+                                <li>Empire Blue Access Gated EPO</li>
+                                <li>FEP BLUE/FEDERAL</li>
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
+                        ` : ''}
+
+                        ${insurance.includes("Wellcare") ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>SIMPLE OPEN (PPO)</li>
+                            </ul>
+                        ` : ''}
+
+                        ${insurance.includes("Magnacare") ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
+                        ` : ''}
+
+                        ${insurance.includes("Oscar Health") ? `
+                            <p style="margin-bottom: 5px;">If the patient has one of these plans, they do not need PCP Change:</p>
+                            <ul style="text-align: left; padding-left: 20px; margin-top: 5px;">
+                                <li>Preferred Provider Organization (PPO)</li>
+                            </ul>
                         ` : ''}
                     `;
                     
@@ -824,34 +1065,28 @@
                                 • If you want to send Healow Sign, 
                                 <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
                                 target="_blank" 
-                                class="form-link">
-                                click here for Healow Sign Process
-                                </a>
+                                class="form-link">Healow Sign Process</a>
                             </p>
                             <p>If you want to print out the required forms, you can access them below:</p>
                             <p>
                                 • <a href="https://drive.google.com/file/d/1YI4b9ZOTKDTM0SsGLJzytdTO24zTNE2E/view?usp=drive_link" 
                                 target="_blank" 
-                                class="form-link">
-                                Voluntary Alignment Form
-                                </a>
+                                class="form-link">Voluntary Alignment Form</a>
                             </p>
                             <p>
                                 • <a href="https://drive.google.com/file/d/1LbekCRNLZsXzzNdXS0edFVZCmjNZwnA5/view?usp=sharing" 
                                 target="_blank" 
-                                class="form-link">
-                                SDoH Form
-                                </a>
+                                class="form-link">SDoH Form</a>
                             </p>
                         `;
-                    } else if (data.pcp_change_requirement?.form_link) {
+                    } else if (hasPcpChangeForm || data.pcp_change_requirement?.form_link) {
                         pcpChangeHTML += `
+                            <div class="section-header">PCP Change Form</div>
                             <div class="phone-submission">
                                 <p>If you want to send the 
                                     <a href="https://checkin.naomedical.com"
                                     target="_blank" 
-                                    class="form-link">PCP Change Portal Link
-                                    </a>       
+                                    class="form-link">PCP Change Portal Link</a>       
                                     to the patient, please enter their phone number below,
                                 </p>
                                 <input type="tel" id="phoneNumber" class="phone-input" 
@@ -860,62 +1095,19 @@
                                 <button onclick="submitPhoneNumber('${insurance}')">Submit</button>
                                 <div id="phoneSubmissionMessage"></div>
                             </div>
-                            <p>
+                            
+                            <p style="margin-top: 15px; margin-bottom: 5px;">
                                 • If you want to send Healow Sign, 
                                 <a href="https://docs.google.com/presentation/d/1VyVUQb-XBqmuwI4JGZyYN_3zwZD0O-SYDb6V16E6DcY/edit#slide=id.g3086a10fc51_0_189" 
                                 target="_blank" 
-                                class="form-link">
-                                click here for Healow Sign Process
-                                </a>
+                                class="form-link">Healow Sign Process</a>
                             </p>
-                            <p>
+                            <p style="margin-top: 5px; margin-bottom: 5px;">
                                 • If you want to print out the form, 
-                                <a href="${data.pcp_change_requirement.form_link}" 
+                                <a href="${data.pcp_change_requirement.form_link || '#'}" 
                                 target="_blank" 
-                                class="form-link">
-                                click here to access PCP Change Form
-                                </a>
+                                class="form-link">PCP Change Form</a>
                             </p>
-                        `;
-                    }
-                    
-                    // Add United Healthcare specific information if applicable
-                    if (insurance.includes("UHC") || insurance.includes("United Healthcare")) {
-                        pcpChangeHTML += `
-                            <div class="section-header">Line of Business that do not need PCP Change.</div>
-                            <ul style="text-align: left; padding-left: 20px;">
-                                <li>Choice Plus</li>
-                                <li>LPPO-UNITEDHEALTHCARE GROUP MEDICARE ADVANTAGE</li>
-                                <li>UHC Dual Complete NY-S001 (PPO D-SNP)</li>
-                                <li>POS Choice Plus</li>
-                                <li>Choice EPO</li>
-                                <li>Preferred Provider Organization (PPO)</li>
-                            </ul>
-                        `;
-                    }
-                    
-                    // Add Oxford specific information if applicable
-                    if (insurance.includes("Oxford")) {
-                        pcpChangeHTML += `
-                            <div class="section-header">Line of Business that do not need PCP Change.</div>
-                            <ul style="text-align: left; padding-left: 20px;">
-                                <li>Liberty Network</li>
-                                <li>Freedom Network</li>
-                            </ul>
-                        `;
-                    }
-                    
-                    // Add Aetna specific information if applicable
-                    if (insurance.includes("Aetna")) {
-                        pcpChangeHTML += `
-                            <div class="section-header">Line of Business that do not need PCP Change.</div>
-                            <ul style="text-align: left; padding-left: 20px;">
-                                <li>OPEN ACCESS AETNA SELECT</li>
-                                <li>OPEN ACCESS MANAGED CHOICE (MC)</li>
-                                <li>AETNA CHOICE POS II</li>
-                                <li>OPEN ACCESS ELECT CHOICE (OAEPO)</li>
-                                <li>Preferred Provider Organization (PPO)</li>
-                            </ul>
                         `;
                     }
                 }
@@ -941,8 +1133,7 @@
                 console.error("Error fetching data after multiple retries:", error);
                 document.getElementById("output").innerHTML = `
                     <div class="error-message">
-                        An error occurred while fetching data. 
-                        <button onclick="fetchOptions()" class="retry-button">Retry</button>
+                        An error occurred while fetching data. Please try again later.
                     </div>`;
             }
         }
@@ -962,14 +1153,17 @@
 <body>
     <div class="page-container">
         <div class="header">
-            <h1>Provider Look Up Tool</h1>
+            <div class="header-container">
+                <img src="/static/nao.logo.png" alt="Nao Medical Logo" class="header-logo">
+                <h1 class="header-title">Provider Look Up Tool</h1>
+            </div>
         </div>
         
         <div class="main-content">
             <div class="left-column">
                 <div class="filters">
                     <div class="filter-group">
-                        <label>Location:</label>
+                        <label class="select-label" for="site">Location:</label>
                         <select id="site">
                             <option value="">Select Location</option>
                             <option value="Astoria">Astoria</option>
@@ -992,7 +1186,7 @@
                     </div>
                     
                     <div class="filter-group">
-                        <label>Insurance:</label>
+                        <label class="select-label" for="insurance">Insurance:</label>
                         <select id="insurance">
                             <option value="">Select Insurance</option>
                             <option value="1199 National Benefits Fund">1199 National Benefits Fund</option>
@@ -1030,21 +1224,19 @@
                         </select>
                     </div>
                     
-                    <div class="filter-group">
-                        <label>
+                    <div class="checkbox-container">
+                        <div class="checkbox-item">
                             <input type="checkbox" id="isUnder18">
-                            Is patient under the age of 18?
-                        </label>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>
+                            <label for="isUnder18">Is patient under the age of 18?</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
                             <input type="checkbox" id="isFollowUp">
-                            Is this a follow-up appointment?
-                        </label>
+                            <label for="isFollowUp">Is this a follow-up appointment?</label>
+                        </div>
                     </div>
                     
-                    <button onclick="handleSubmit()">Submit</button>
+                    <button onclick="handleSubmit()" class="submit-button">Submit</button>
                 </div>
 
                 <div class="feedback-section">
