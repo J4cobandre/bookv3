@@ -663,6 +663,39 @@
         .phone-submission + p {
             margin-top: 15px;
         }
+
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            width: 100%;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .retry-button {
+            background-color: #1e3565;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-button:hover {
+            background-color: #2a4980;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
     <script>
         function formatPhoneNumber(input) {
@@ -904,7 +937,7 @@
             }
         }
 
-        // Modify the fetchOptions function to use the improved retry mechanism
+        // Modify the fetchOptions function to include a centered retry button
         async function fetchOptions() {
             const site = document.getElementById("site").value;
             const insurance = document.getElementById("insurance").value;
@@ -961,12 +994,7 @@
             }
 
             try {
-                const response = await fetchWithRetry(
-                    `/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`,
-                    {},  // default options
-                    3,   // max 3 retries
-                    1000 // 1 second delay between retries
-                );
+                const response = await fetch(`/test?location=${encodeURIComponent(site)}&insurance=${encodeURIComponent(insurance)}&isUnder18=${isUnder18}&isFollowUp=${isFollowUp}`);
                 
                 const data = await response.json();
 
@@ -1133,10 +1161,13 @@
                 // Setup phone formatting after content is added
                 setTimeout(setupPhoneNumberFormatting, 100);
             } catch (error) {
-                console.error("Error fetching data after multiple retries:", error);
+                console.error("Error fetching data:", error);
                 document.getElementById("output").innerHTML = `
-                    <div class="error-message">
-                        An error occurred while fetching data. Please try again later.
+                    <div class="error-container">
+                        <div class="error-message">
+                            An error occurred while fetching data. The database may be spinning up.
+                        </div>
+                        <button onclick="fetchOptions()" class="retry-button">Retry</button>
                     </div>`;
             }
         }
