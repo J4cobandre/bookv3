@@ -762,8 +762,8 @@
             return noPCPChangeInsurances.some(ins => insurance.includes(ins));
         }
 
-        // Modify the fetchWithRetry function to handle retries more gracefully
-        async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
+        // Modify the fetchWithRetry function to handle database spin-up time
+        async function fetchWithRetry(url, options = {}, maxRetries = 5, initialDelay = 1000) {
             let lastError;
             
             for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -773,8 +773,11 @@
                     console.log(`Fetch attempt ${attempt + 1} failed:`, error);
                     lastError = error;
                     
-                    // Wait before retrying
+                    // Wait before retrying with exponential backoff
                     if (attempt < maxRetries - 1) {
+                        // Exponential backoff: 1s, 2s, 4s, 8s, etc.
+                        const delay = initialDelay * Math.pow(2, attempt);
+                        console.log(`Waiting ${delay}ms before retry ${attempt + 2}...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
