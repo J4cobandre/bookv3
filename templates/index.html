@@ -841,8 +841,21 @@
             return "Please check the back of the Patient's Insurance ID card";
         }
 
-        // Function to check if a provider is PCP eligible based on priority
+        // Function to check if a provider is PCP eligible based on priority and location
         function isPcpEligible(providerName, location, insurance) {
+            // Define providers who are never eligible for PCP (regardless of insurance)
+            const neverEligibleProviders = [
+                "Bene Aneke (Pyschiatry)",
+                "Kamilah Bradley (Therapy)",
+                "Tamara Henry (Pyschiatry)",
+                "Brocha Newman (Nutrition)"
+            ];
+            
+            // First check if provider is in the never-eligible list
+            if (neverEligibleProviders.includes(providerName)) {
+                return false;
+            }
+            
             // Define priority lists from the backend
             const priority_1 = [
                 "Priti Jain", "Sandeep Jain", "Dayakishan Chahal", "Michael Ihemaguba", "Mansoor Farooki", 
@@ -860,6 +873,43 @@
                 insurance === "Emblem Health-GHI") {
                 
                 return priority_1.includes(providerName) || priority_2.includes(providerName);
+            }
+            
+            // For Healthfirst insurance, check location-specific eligibility
+            if (insurance.includes("Healthfirst")) {
+                // Map of providers to their eligible locations
+                const healthfirstProviderLocations = {
+                    "Priti Jain": ["Hicksville", "Jackson Heights"],
+                    "Sandeep Jain": ["Bartow"],
+                    "Michael Ihemaguba": ["Bartow", "BX174"],
+                    "Andie Spadaccini": ["Stuytown"],
+                    "Abel Infante": ["Astoria", "Jackson Heights"],
+                    "Dhara Rana": ["Bartow"],
+                    "David Johnshon": ["Hicksville"],
+                    "Fazle Showon": ["LONG ISLAND CITY", "BX174"],
+                    "Homa Khowaja": ["Hicksville", "Mineola"],
+                    "Kimberly Innocent": ["Stuytown"],
+                    "Max Rubin": ["Crown Heights"],
+                    "Nickecha Redway": ["Crown Heights"],
+                    "Rainier Chirinos": ["Astoria", "Jackson Heights"],
+                    "Dayakishan Chahal": ["Astoria", "Crown Heights", "Williamsburg"],
+                    "Mansoor Farooki": ["Hicksville", "Jackson Heights"],
+                    "Rosetta Romero-Williams": ["Jackson Heights", "Jamaica"],
+                    "Suraiya Chowdhury": ["Hicksville"],
+                    "Veronica Ramsaroop": ["Astoria", "Jackson Heights", "Hicksville"],
+                    "Keith Haseley": ["Hicksville"],
+                    "Ercole Petrungaro": ["Mineola"],
+                    "Sara Park": ["Mineola"],
+                    "Uchenna Egwuonwu": ["Mineola"]
+                };
+                
+                // Check if provider is in the map and if current location is in their eligible locations
+                if (healthfirstProviderLocations[providerName]) {
+                    return healthfirstProviderLocations[providerName].includes(location);
+                }
+                
+                // If provider is not in the map, they're not eligible for Healthfirst
+                return false;
             }
             
             // For all other insurances, all providers are eligible (default behavior)
