@@ -965,7 +965,7 @@
             `;
         }
 
-        // Update the filterProviders function to include fallback to Priti Jain
+        // Update the filterProviders function to properly handle unchecking the filter
         function filterProviders() {
             const input = document.getElementById('providerSearch');
             const filter = input.value.toUpperCase();
@@ -976,18 +976,29 @@
             // Get the current insurance from the select element
             const insurance = document.getElementById("insurance").value;
             
+            // First, remove any existing fallback message and special rows
+            const existingMessage = document.getElementById('no-pcp-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const specialPritiRow = document.getElementById('special-priti-row');
+            if (specialPritiRow) {
+                specialPritiRow.remove();
+            }
+            
             // Count how many rows are visible after filtering
             let visibleRows = 0;
             
-            // First pass: Apply filters and count visible rows
+            // Apply filters and count visible rows
             for (let i = 1; i < tr.length; i++) { // Start from 1 to skip header row
                 const tdName = tr[i].getElementsByTagName('td')[0];
                 const tdNPI = tr[i].getElementsByTagName('td')[1];
-                const isPcpEligible = tr[i].getAttribute('data-pcp-eligible') === 'true';
                 
-                if (tdName || tdNPI) {
+                if (tdName && tdNPI) {
                     const nameText = tdName.textContent || tdName.innerText;
                     const npiText = tdNPI.textContent || tdNPI.innerText;
+                    const isPcpEligible = tr[i].getAttribute('data-pcp-eligible') === 'true';
                     
                     const matchesSearch = nameText.toUpperCase().indexOf(filter) > -1 || 
                                          npiText.toUpperCase().indexOf(filter) > -1;
@@ -1023,12 +1034,6 @@
                 // Get the tbody element to add our message
                 const tbody = table.getElementsByTagName('tbody')[0];
                 
-                // Remove any existing fallback message
-                const existingMessage = document.getElementById('no-pcp-message');
-                if (existingMessage) {
-                    existingMessage.remove();
-                }
-                
                 // Add fallback message
                 const messageRow = document.createElement('tr');
                 messageRow.id = 'no-pcp-message';
@@ -1042,12 +1047,13 @@
                 
                 if (insurance.toLowerCase().includes('healthfirst')) {
                     // For Healthfirst, always show Priti Jain with special ID
-                    messageCell.innerHTML = 'There are currently no providers eligible for PCP Selection for this location and insurance. Please use this provider for PCP election:';
+                    messageCell.innerHTML = 'There are no Providers eligible for PCP Selection for this location and insurance. Please use this provider for PCP election:';
                     messageRow.appendChild(messageCell);
                     tbody.insertBefore(messageRow, tbody.firstChild);
                     
                     // Add Priti Jain row with Healthfirst ID
                     const pritiRow = document.createElement('tr');
+                    pritiRow.id = 'special-priti-row';
                     pritiRow.style.display = '';
                     pritiRow.style.backgroundColor = '#f0fff4';
                     pritiRow.style.fontWeight = '600';
@@ -1071,6 +1077,7 @@
                     pritiRow.style.display = '';
                     pritiRow.style.backgroundColor = '#f0fff4';
                     pritiRow.style.fontWeight = '600';
+                    pritiRow.id = 'special-priti-row';
                     
                     // Move Priti's row to the top
                     tbody.insertBefore(pritiRow, tbody.firstChild.nextSibling);
@@ -1079,12 +1086,6 @@
                     messageCell.innerHTML = 'There are no Providers eligible for PCP Selection for this location and insurance.';
                     messageRow.appendChild(messageCell);
                     tbody.insertBefore(messageRow, tbody.firstChild);
-                }
-            } else {
-                // If we have visible rows or filter is off, remove any fallback message
-                const existingMessage = document.getElementById('no-pcp-message');
-                if (existingMessage) {
-                    existingMessage.remove();
                 }
             }
         }
