@@ -4,6 +4,8 @@ from flask_cors import CORS
 from sqlalchemy import case
 import requests
 import json
+import time
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
@@ -66,6 +68,36 @@ class Provider(db.Model):
     hfmc_contract = db.Column(db.Boolean, nullable=False)
     status = db.Column(db.String(256), nullable=False)
 
+# Add a function to handle database retries
+def query_with_retry(query_func, max_retries=3, retry_delay=1):
+    """
+    Execute a database query with retry logic for handling connection issues.
+    
+    Args:
+        query_func: Function that performs the actual database query
+        max_retries: Maximum number of retry attempts
+        retry_delay: Delay between retries in seconds
+        
+    Returns:
+        The result of the query function or raises the last exception
+    """
+    last_error = None
+    
+    for attempt in range(max_retries):
+        try:
+            return query_func()
+        except (OperationalError, SQLAlchemyError) as e:
+            last_error = e
+            print(f"Database error on attempt {attempt+1}/{max_retries}: {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                # Increase delay for next attempt
+                retry_delay *= 2
+    
+    # If we get here, all retries failed
+    raise last_error
+
 # Route to serve the HTML form
 @app.route('/')
 def index():
@@ -104,24 +136,36 @@ def get_provider_options():
         ],
         else_=len(priority_1) + len(priority_2) + 1
     )
-    # Query the providers with order by priority
-    if location.upper() in ["PSYCH", "NUTRITION", "TELEVISIT"]:
-        providers = Provider.query.filter(
-            db.func.upper(Provider.location) == location.upper(),
-            db.func.upper(Provider.insurance) == insurance.upper()
-        ).order_by(order_case).all()
-    else:
-        providers = Provider.query.filter(
-            db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
-            db.func.upper(Provider.insurance) == insurance.upper()
-        ).order_by(order_case).all()
+    
+    # Wrap the database query in the retry function
+    try:
+        if location.upper() in ["PSYCH", "NUTRITION", "TELEVISIT"]:
+            def query_func():
+                return Provider.query.filter(
+                    db.func.upper(Provider.location) == location.upper(),
+                    db.func.upper(Provider.insurance) == insurance.upper()
+                ).order_by(order_case).all()
+            
+            providers = query_with_retry(query_func)
+        else:
+            def query_func():
+                return Provider.query.filter(
+                    db.func.upper(Provider.location).in_([location.upper(), "ALL"]),
+                    db.func.upper(Provider.insurance) == insurance.upper()
+                ).order_by(order_case).all()
+            
+            providers = query_with_retry(query_func)
+    except Exception as e:
+        print(f"Failed to query database after retries: {str(e)}")
+        return jsonify({"error": "Database connection error. Please try again in a moment."})
 
     # Debugging information
     print(f"Location: {location}")
     print(f"Insurance: {insurance}")
-    print(f"Providers found: {len(providers)}")
-    for provider in providers:
-        print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
+    print(f"Providers found: {len(providers) if providers else 0}")
+    if providers:
+        for provider in providers:
+            print(f"Provider: {provider.provider_name}, Location: {provider.location}, Insurance: {provider.insurance}")
 
     if not providers:
         return jsonify({"error": "No Providers Available. Please book this appointment with Statcare Urgent Care."})
